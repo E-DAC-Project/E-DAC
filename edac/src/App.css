@@ -1,38 +1,71 @@
-.App {
-  text-align: center;
+/* Default Light Theme */
+body {
+  background-color: #f9faff;
+  color: #333;
+  transition: all 0.3s;
+  scroll-behavior: smooth;
+  height: auto;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.navbar {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #eaeaea;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.navbar-brand {
+  font-weight: bold;
+  color: #007bff !important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.nav-link {
+  color: #333 ;
+  font-weight: 500;
+  transition: color 0.3s;
 }
 
-.App-link {
-  color: #61dafb;
+.nav-link:hover {
+  color: #007bff !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btn-outline-primary {
+  border-radius: 20px;
 }
+
+.container h2 {
+  color: #007bff;
+  font-weight: 600;
+}
+
+footer {
+  background-color: #f8f9fa;
+  color: #666;
+}
+
+/* Dark Theme Styles */
+body.dark-theme {
+  background-color: #121212;
+  color: whitesmoke;
+}
+
+body.dark-theme .card,
+body.dark-theme .navbar,
+body.dark-theme footer {
+  background-color: #1f1f1f !important;
+  color: #fff !important;
+}
+
+body.dark-theme .form-control {
+  color: #fff !important;
+  border-color: #555 !important;
+}
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+body.dark-theme .nav-link {
+  color: whitesmoke !important;
+}
+body.dark-theme .nav-link:hover {
+  color: #aadfff !important;
+}
+
