@@ -1,13 +1,33 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Mail, MapPin, Phone, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 export default function Contact() {
-  const handleSubmit = (e) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Add actual form handling logic
-    alert("Form submitted!");
+
+    try {
+      await axios.post("http://localhost:3000/api/contact", formData);
+
+      toast.success("Message sent successfully!");
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error("Contact form error:", error);
+      toast.error("Failed to send message.");
+    }
   };
 
   return (
@@ -38,11 +58,11 @@ export default function Contact() {
 
             {/* Contact Form */}
             <div className="col-md-7 text-start text-primary">
-              <div className="border p-4 rounded h-100 align-items-left">
+              <div className="border p-4 rounded h-100">
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3 row align-items-center">
                     <label htmlFor="name" className="col-sm-4 col-form-label">
-                      Your Name : 
+                      Your Name :
                     </label>
                     <div className="col-sm-8">
                       <input
@@ -51,13 +71,15 @@ export default function Contact() {
                         className="form-control"
                         required
                         placeholder="Your Name"
+                        value={formData.name}
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
 
                   <div className="mb-3 row align-items-center">
                     <label htmlFor="email" className="col-sm-4 col-form-label">
-                      Your Email : 
+                      Your Email :
                     </label>
                     <div className="col-sm-8">
                       <input
@@ -66,16 +88,15 @@ export default function Contact() {
                         className="form-control"
                         required
                         placeholder="name@gmail.com"
+                        value={formData.email}
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
 
                   <div className="mb-3 row">
-                    <label
-                      htmlFor="message"
-                      className="col-sm-4 col-form-label"
-                    >
-                      Your Message : 
+                    <label htmlFor="message" className="col-sm-4 col-form-label">
+                      Your Message :
                     </label>
                     <div className="col-sm-8">
                       <textarea
@@ -84,6 +105,8 @@ export default function Contact() {
                         rows="4"
                         required
                         placeholder="Tell us how we can help..."
+                        value={formData.message}
+                        onChange={handleChange}
                       ></textarea>
                     </div>
                   </div>
@@ -104,7 +127,6 @@ export default function Contact() {
 
           <hr className="my-4" />
 
-          {/* Social Links */}
           <p className="text-secondary mb-2">Follow us</p>
           <div className="d-flex justify-content-center gap-3 text-primary">
             <Link to="#" aria-label="LinkedIn" className="hover-opacity">
@@ -117,14 +139,6 @@ export default function Contact() {
           </p>
         </div>
       </div>
-
-      {/* Optional custom style */}
-      <style>{`
-        .hover-opacity:hover {
-          opacity: 0.7;
-          transition: opacity 0.3s ease-in-out;
-        }
-      `}</style>
     </div>
   );
 }

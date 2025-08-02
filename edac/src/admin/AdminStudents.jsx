@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function AdminStudents() {
   const { courses } = useOutletContext();
@@ -9,25 +11,62 @@ function AdminStudents() {
   const [editIndex, setEditIndex] = useState(null);
   const [editedStudent, setEditedStudent] = useState({ name: "", course: "" });
 
-  const addStudent = () => {
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const res = await axios.get("/api/students");
+        setStudents(res.data);
+      } catch (err) {
+        toast.error("Failed to load students.");
+      }
+    };
+    fetchStudents();
+  }, []);
+
+  const addStudent = async () => {
     if (newStudent.name && newStudent.course) {
-      setStudents([...students, newStudent]);
-      setNewStudent({ name: "", course: "" });
+      try {
+        const res = await axios.post("/api/students", newStudent);
+        setStudents([...students, res.data]);
+        setNewStudent({ name: "", course: "" });
+        toast.success("Student added!");
+      } catch (err) {
+        toast.error("Failed to add student.");
+      }
+    } else {
+      toast.warning("Please fill all fields.");
     }
   };
 
-  const deleteStudent = (index) => {
-    const updated = [...students];
-    updated.splice(index, 1);
-    setStudents(updated);
+  const deleteStudent = async (index) => {
+    const studentToDelete = students[index];
+    try {
+      await axios.delete(`/api/students/${studentToDelete.id}`);
+      const updated = [...students];
+      updated.splice(index, 1);
+      setStudents(updated);
+      toast.success("Student deleted.");
+    } catch (err) {
+      toast.error("Failed to delete student.");
+    }
   };
 
-  const updateStudent = () => {
+  const updateStudent = async () => {
     if (editedStudent.name && editedStudent.course) {
-      const updated = [...students];
-      updated[editIndex] = editedStudent;
-      setStudents(updated);
-      setEditIndex(null);
+      const studentToUpdate = students[editIndex];
+      try {
+        const res = await axios.put(`/api/students/${studentToUpdate.id}`, editedStudent);
+        const updated = [...students];
+        updated[editIndex] = res.data;
+        setStudents(updated);
+        setEditIndex(null);
+        setEditedStudent({ name: "", course: "" });
+        toast.success("Student updated!");
+      } catch (err) {
+        toast.error("Failed to update student.");
+      }
+    } else {
+      toast.warning("Please fill all fields.");
     }
   };
 

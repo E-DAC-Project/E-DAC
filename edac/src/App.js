@@ -1,27 +1,15 @@
 import React from 'react';
-import { BrowserRouter, useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 import './App.css';
-
-function Layout() {
-  const location = useLocation();
-  const hideLayout = location.pathname === '/login' || location.pathname === '/signup';
-
-  return (
-    <>
-      {!hideLayout && <Navbar />}
-      <AppRoutes />
-      {!hideLayout && <Footer />}
-    </>
-  );
-}
 
 function App() {
   return (
     <BrowserRouter>
-      <Layout />
+      <AppRoutes />
+      <ToastContainer position="top-right" autoClose={2000} />
     </BrowserRouter>
   );
 }
