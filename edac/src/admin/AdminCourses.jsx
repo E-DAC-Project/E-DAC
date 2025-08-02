@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-toastify";
+
 
 function AdminCourses() {
   const { courses, setCourses } = useOutletContext();
@@ -8,30 +11,80 @@ function AdminCourses() {
   const [editIndex, setEditIndex] = useState(null);
   const [editedCourse, setEditedCourse] = useState("");
 
-  const addCourse = () => {
-    const trimmed = courseName.trim();
-    if (trimmed && !courses.includes(trimmed)) {
-      setCourses([...courses, trimmed]);
-      setCourseName("");
+  useEffect(() => {
+  const fetchCourses = async () => {
+    try {
+      const response = await axios.get("/api/courses");
+      setCourses(response.data);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
     }
   };
+  fetchCourses();
+}, [setCourses]);
 
-  const deleteCourse = (index) => {
+const addCourse = async () => {
+  const trimmed = courseName.trim();
+  if (!trimmed) {
+    toast.warning("Course name cannot be empty.");
+    return;
+  }
+
+  if (courses.includes(trimmed)) {
+    toast.warning("Course already exists.");
+    return;
+  }
+
+  try {
+    const res = await axios.post("/api/courses", { name: trimmed });
+    setCourses([...courses, res.data.name]); 
+    setCourseName("");
+    toast.success("Course added!");
+  } catch (error) {
+    console.error("Add course error:", error);
+    toast.error("Failed to add course.");
+  }
+};
+
+const deleteCourse = async (index) => {
+  const courseToDelete = courses[index];
+
+  try {
+    await axios.delete(`/api/courses/${courseToDelete.id}`); 
     const updated = [...courses];
     updated.splice(index, 1);
     setCourses(updated);
-  };
+    toast.success("Course deleted.");
+  } catch (error) {
+    console.error("Delete course error:", error);
+    toast.error("Failed to delete course.");
+  }
+};
 
-  const updateCourse = (index) => {
-    const trimmed = editedCourse.trim();
-    if (trimmed) {
-      const updated = [...courses];
-      updated[index] = trimmed;
-      setCourses(updated);
-      setEditIndex(null);
-      setEditedCourse("");
-    }
-  };
+const updateCourse = async (index) => {
+  const trimmed = editedCourse.trim();
+  if (!trimmed) {
+    toast.warning("Course name cannot be empty.");
+    return;
+  }
+
+  const courseToUpdate = courses[index];
+
+  try {
+    const res = await axios.put(`/api/courses/${courseToUpdate.id}`, { name: trimmed });
+    const updated = [...courses];
+    updated[index] = res.data.name; 
+    setCourses(updated);
+    setEditIndex(null);
+    setEditedCourse("");
+    toast.success("Course updated!");
+  } catch (error) {
+    console.error("Update course error:", error);
+    toast.error("Failed to update course.");
+  }
+};
+
+
 
   return (
     <div>

@@ -1,83 +1,129 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
 import "./Login.css";
-import { Link } from "react-router-dom";
 import logo from "../images/logo.png";
 import animation from "../images/animation.json";
-import signin from "../images/signin.json"
+import signin from "../images/signin.json";
 import Lottie from "lottie-react";
 
 const Login = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
   const navigate = useNavigate();
 
-  const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [signupData, setSignupData] = useState({
     firstname: "",
     lastname: "",
     phone: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const handleSignup = async (e) => {
     e.preventDefault();
-  
+    const { firstname, lastname, phone, email, password, confirmPassword } =
+      signupData;
+
+    // Frontend validation
+    if (
+      !firstname ||
+      !lastname ||
+      !phone ||
+      !email ||
+      !password ||
+      !confirmPassword
+    ) {
+      return toast.warning("All fields are required.");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return toast.warning("Enter a valid email address.");
+    }
+
+    if (phone.length < 10 || !/^\d+$/.test(phone)) {
+      return toast.warning("Enter a valid phone number.");
+    }
+
+    if (password !== confirmPassword) {
+      return toast.error("Passwords do not match.");
+    }
+
+    setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(signupData),
-      });
-  
-      const result = await response.json();
-  
-      if (response.status === 200) {
-        alert("Signup successful! Please login.");
+      const res = await axios.post(
+        "http://localhost:3000/register",
+        signupData
+      );
+      if (res.status === 200) {
+        toast.success("Signup successful! Please login.");
         setIsSignUpMode(false);
+        setSignupData({
+          firstname: "",
+          lastname: "",
+          phone: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
       } else {
-        alert(result.message || "Signup failed");
+        toast.error(res.data.message || "Signup failed");
       }
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert("Something went wrong during signup.");
+    } catch (err) {
+      toast.error("Something went wrong during signup.");
+    } finally {
+      setLoading(false);
     }
   };
-  
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+    setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData),
-      });
-  
-      const result = await response.json();
-  
-      if (response.status === 200) {
-        alert("Login successful!");
-        navigate("/home");
+      const res = await axios.post("http://localhost:3000/login", loginData);
+      if (res.status === 200) {
+        const { token, user } = res.data;
+
+        if (rememberMe) {
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+        } else {
+          sessionStorage.setItem("token", token);
+          sessionStorage.setItem("user", JSON.stringify(user));
+        }
+
+        toast.success("Login successful!");
+
+        if (user.role === "admin") {
+          navigate("/admindashboard");
+        } else if (user.role === "student") {
+          navigate("/studentdashboard");
+        } else {
+          toast.warning("Unknown user role");
+        }
       } else {
-        alert(result.message || "Login failed");
+        toast.error(res.data.message || "Login failed");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Something went wrong during login.");
+    } catch (err) {
+      toast.error("Something went wrong during login.");
+    } finally {
+      setLoading(false);
     }
   };
-  
 
   return (
     <div className={`containers ${isSignUpMode ? "sign-up-mode" : ""}`}>
       <div className="forms-container">
         <div className="signin-signup">
+          {/* ==== Login Form ==== */}
           <form className="sign-in-form" onSubmit={handleLogin}>
-            <div>
-              <img src={logo} width="100px" alt="Brand" />
-            </div>
+            <img src={logo} width="50px" alt="Brand" />
             <h2 className="title">Sign in</h2>
             <div className="input-field">
               <i className="fas fa-user"></i>
@@ -103,109 +149,63 @@ const Login = () => {
                 }
               />
             </div>
-            <input type="submit" value="Login" className="btn solid" />
-            <p className="social-text">Or Sign in with social platforms</p>
-            <div className="social-media">
-              <Link to="#" className="social-icon">
-                <i className="fab fa-facebook-f"></i>
-              </Link>
-              <Link to="#" className="social-icon">
-                <i className="fab fa-twitter"></i>
-              </Link>
-              <Link to="#" className="social-icon">
-                <i className="fab fa-google"></i>
-              </Link>
-              <Link to="#" className="social-icon">
-                <i className="fab fa-linkedin-in"></i>
-              </Link>
+            <div className="mb-2 d-flex align-items-center">
+              <input
+                type="checkbox"
+                className="form-check-input me-2"
+                checked={rememberMe}
+                onChange={() => setRememberMe(!rememberMe)}
+              />
+              <label>Remember Me</label>
             </div>
+            <button type="submit" className="btn solid" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
+            </button>
           </form>
 
+          {/* ==== Signup Form ==== */}
           <form className="sign-up-form" onSubmit={handleSignup}>
-            <div>
-              <img src={logo} width="100px" alt="Brand" />
-            </div>
+            <img src={logo} width="100px" alt="Brand" />
             <h2 className="title">Sign up</h2>
-            <div className="input-field">
-              <i className="fas fa-user"></i>
-              <input
-                type="text"
-                placeholder="First Name"
-                required
-                value={signupData.firstname}
-                onChange={(e) =>
-                  setSignupData({ ...signupData, firstname: e.target.value })
-                }
-              />
-            </div>
-            <div className="input-field">
-              <i className="fas fa-user"></i>
-              <input
-                type="text"
-                placeholder="Last Name"
-                required
-                value={signupData.lastname}
-                onChange={(e) =>
-                  setSignupData({ ...signupData, lastname: e.target.value })
-                }
-              />
-            </div>
-            <div className="input-field">
-              <i className="fas fa-phone"></i>
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                required
-                value={signupData.phone}
-                onChange={(e) =>
-                  setSignupData({ ...signupData, phone: e.target.value })
-                }
-              />
-            </div>
-            <div className="input-field">
-              <i className="fas fa-envelope"></i>
-              <input
-                type="email"
-                placeholder="Email"
-                required
-                value={signupData.email}
-                onChange={(e) =>
-                  setSignupData({ ...signupData, email: e.target.value })
-                }
-              />
-            </div>
-            <div className="input-field">
-              <i className="fas fa-lock"></i>
-              <input
-                type="password"
-                placeholder="Password"
-                required
-                value={signupData.password}
-                onChange={(e) =>
-                  setSignupData({ ...signupData, password: e.target.value })
-                }
-              />
-            </div>
-            <input type="submit" value="Sign up" className="btn" />
-            <p className="social-text">Or Sign up with social platforms</p>
-            <div className="social-media">
-              <Link to="#" className="social-icon">
-                <i className="fab fa-twitter"></i>
-              </Link>
-              <Link to="#" className="social-icon">
-                <i className="fab fa-google"></i>
-              </Link>
-              <Link to="#" className="social-icon">
-                <i className="fab fa-facebook-f"></i>
-              </Link>
-              <Link to="#" className="social-icon">
-                <i className="fab fa-linkedin-in"></i>
-              </Link>
-            </div>
+            {[
+              "firstname",
+              "lastname",
+              "phone",
+              "email",
+              "password",
+              "confirmPassword",
+            ].map((field, idx) => (
+              <div className="input-field" key={idx}>
+                <i
+                  className={`fas fa-${
+                    field.includes("name")
+                      ? "user"
+                      : field === "email"
+                      ? "envelope"
+                      : "lock"
+                  }`}
+                ></i>
+                <input
+                  type={field.includes("password") ? "password" : "text"}
+                  placeholder={field
+                    .replace(/([A-Z])/g, " $1")
+                    .replace(/^./, (s) => s.toUpperCase())}
+                  required
+                  value={signupData[field]}
+                  onChange={(e) =>
+                    setSignupData({ ...signupData, [field]: e.target.value })
+                  }
+                />
+              </div>
+            ))}
+            <button type="submit" className="btn" disabled={loading}>
+              {loading ? "Signing up..." : "Sign up"}
+            </button>
           </form>
         </div>
       </div>
 
+      {/* ==== Panels ==== */}
       <div className="panels-container">
         <div className="panel left-panel">
           <div className="content">
@@ -222,7 +222,7 @@ const Login = () => {
         </div>
         <div className="panel right-panel">
           <div className="content">
-            <h3>One of Us?</h3>
+            <h3>One of us?</h3>
             <p>Access your account and pick up where you left off.</p>
             <button
               className="btn transparent"

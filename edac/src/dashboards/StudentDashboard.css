@@ -19,7 +19,7 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: #343a40;
   border-right: 2px solid #cecccc;
 }
 .sidebar div {

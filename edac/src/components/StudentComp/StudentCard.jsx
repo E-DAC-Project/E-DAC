@@ -1,6 +1,7 @@
 import React from "react";
 import "./StudentCard.css";
-export default function () {
+
+export default function StudentCard() {
   return (
     <div>
       <div className="custom-card">
