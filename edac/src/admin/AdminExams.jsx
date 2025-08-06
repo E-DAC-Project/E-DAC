@@ -4,7 +4,10 @@ import { toast } from "react-toastify";
 import { useOutletContext } from "react-router-dom";
 
 function AdminExams() {
-  const { courses } = useOutletContext();
+  // ✅ Safe access to context
+  const outletContext = useOutletContext();
+  const courses = outletContext?.courses ?? [];
+
   const [selectedCourse, setSelectedCourse] = useState("");
   const [exams, setExams] = useState([]);
   const [newExam, setNewExam] = useState("");

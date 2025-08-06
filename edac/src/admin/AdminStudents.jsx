@@ -1,167 +1,153 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Pencil, Trash2, Plus } from "lucide-react";
-import axios from "axios";
-import { toast } from "react-toastify";
 
 function AdminStudents() {
-  const { courses } = useOutletContext();
+  // ✅ Use a null-safe way to access `courses`
+  const outletContext = useOutletContext();
+  const courses = outletContext?.courses ?? [];
+
   const [students, setStudents] = useState([]);
-  const [newStudent, setNewStudent] = useState({ name: "", course: "" });
+  const [studentName, setStudentName] = useState("");
+  const [studentCourse, setStudentCourse] = useState("");
   const [editIndex, setEditIndex] = useState(null);
   const [editedStudent, setEditedStudent] = useState({ name: "", course: "" });
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const res = await axios.get("/api/students");
-        setStudents(res.data);
-      } catch (err) {
-        toast.error("Failed to load students.");
-      }
-    };
-    fetchStudents();
-  }, []);
-
-  const addStudent = async () => {
-    if (newStudent.name && newStudent.course) {
-      try {
-        const res = await axios.post("/api/students", newStudent);
-        setStudents([...students, res.data]);
-        setNewStudent({ name: "", course: "" });
-        toast.success("Student added!");
-      } catch (err) {
-        toast.error("Failed to add student.");
-      }
-    } else {
-      toast.warning("Please fill all fields.");
-    }
+  const handleAddStudent = () => {
+    if (!studentName || !studentCourse) return;
+    setStudents([...students, { name: studentName, course: studentCourse }]);
+    setStudentName("");
+    setStudentCourse("");
   };
 
-  const deleteStudent = async (index) => {
-    const studentToDelete = students[index];
-    try {
-      await axios.delete(`/api/students/${studentToDelete.id}`);
-      const updated = [...students];
-      updated.splice(index, 1);
-      setStudents(updated);
-      toast.success("Student deleted.");
-    } catch (err) {
-      toast.error("Failed to delete student.");
-    }
+  const handleEditClick = (index) => {
+    setEditIndex(index);
+    setEditedStudent(students[index]);
   };
 
-  const updateStudent = async () => {
-    if (editedStudent.name && editedStudent.course) {
-      const studentToUpdate = students[editIndex];
-      try {
-        const res = await axios.put(`/api/students/${studentToUpdate.id}`, editedStudent);
-        const updated = [...students];
-        updated[editIndex] = res.data;
-        setStudents(updated);
-        setEditIndex(null);
-        setEditedStudent({ name: "", course: "" });
-        toast.success("Student updated!");
-      } catch (err) {
-        toast.error("Failed to update student.");
-      }
-    } else {
-      toast.warning("Please fill all fields.");
-    }
+  const handleUpdateStudent = () => {
+    const updatedStudents = [...students];
+    updatedStudents[editIndex] = editedStudent;
+    setStudents(updatedStudents);
+    setEditIndex(null);
+    setEditedStudent({ name: "", course: "" });
+  };
+
+  const handleDeleteStudent = (index) => {
+    const updatedStudents = [...students];
+    updatedStudents.splice(index, 1);
+    setStudents(updatedStudents);
   };
 
   return (
-    <div>
-      <h2 className="text-primary mb-4">Manage Students</h2>
-      <div className="row mb-3">
-        <div className="col-md-5">
+    <div className="container mt-4">
+      <h3 className="mb-4">Student Management</h3>
+      <div className="row mb-4">
+        <div className="col">
           <input
             type="text"
             className="form-control"
-            placeholder="Student name"
-            value={newStudent.name}
-            onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
+            placeholder="Student Name"
+            value={studentName}
+            onChange={(e) => setStudentName(e.target.value)}
           />
         </div>
-        <div className="col-md-5">
+        <div className="col">
           <select
-            className="form-control"
-            value={newStudent.course}
-            onChange={(e) => setNewStudent({ ...newStudent, course: e.target.value })}
+            className="form-select"
+            value={studentCourse}
+            onChange={(e) => setStudentCourse(e.target.value)}
           >
             <option value="">Select Course</option>
-            {courses.map((course, index) => (
-              <option key={index} value={course}>{course}</option>
-            ))}
+            {Array.isArray(courses) &&
+              courses.map((course, index) => (
+                <option key={index} value={course}>
+                  {course}
+                </option>
+              ))}
           </select>
         </div>
-      </div>
-        <div className="col-md-2">
-          <button className="btn btn-primary w-100" onClick={addStudent}>
-            <Plus size={16} /> Add
+        <div className="col-auto">
+          <button className="btn btn-primary" onClick={handleAddStudent}>
+            <Plus className="me-1" size={18} />
+            Add Student
           </button>
         </div>
+      </div>
 
-      {courses.map((course) => (
-        <div key={course} className="mb-4">
-          <h5>{course}</h5>
-          <ul className="list-group">
-            {students.filter(s => s.course === course).length === 0 ? (
-              <li className="list-group-item text-muted">No students in this course.</li>
-            ) : (
-              students
-                .map((student, index) => ({ ...student, index }))
+      {Array.isArray(courses) &&
+        courses.map((course) => (
+          <div key={course} className="mb-4">
+            <h5>{course}</h5>
+            <ul className="list-group">
+              {students
                 .filter((s) => s.course === course)
-                .map((s) => (
-                  <li key={s.index} className="list-group-item d-flex justify-content-between align-items-center">
-                    {editIndex === s.index ? (
-                      <>
+                .map((student, index) => (
+                  <li
+                    key={index}
+                    className="list-group-item d-flex justify-content-between align-items-center"
+                  >
+                    {editIndex === index ? (
+                      <div className="d-flex w-100">
                         <input
+                          type="text"
                           className="form-control me-2"
                           value={editedStudent.name}
-                          onChange={(e) => setEditedStudent({ ...editedStudent, name: e.target.value })}
+                          onChange={(e) =>
+                            setEditedStudent({
+                              ...editedStudent,
+                              name: e.target.value,
+                            })
+                          }
                         />
                         <select
                           className="form-select me-2"
                           value={editedStudent.course}
-                          onChange={(e) => setEditedStudent({ ...editedStudent, course: e.target.value })}
+                          onChange={(e) =>
+                            setEditedStudent({
+                              ...editedStudent,
+                              course: e.target.value,
+                            })
+                          }
                         >
+                          <option value="">Select Course</option>
                           {courses.map((c, i) => (
-                            <option key={i} value={c}>{c}</option>
+                            <option key={i} value={c}>
+                              {c}
+                            </option>
                           ))}
                         </select>
-                        <button className="btn btn-success btn-sm me-1" onClick={updateStudent}>
-                          Save
+                        <button
+                          className="btn btn-success"
+                          onClick={handleUpdateStudent}
+                        >
+                          Update
                         </button>
-                        <button className="btn btn-secondary btn-sm" onClick={() => setEditIndex(null)}>
-                          Cancel
-                        </button>
-                      </>
+                      </div>
                     ) : (
                       <>
-                        <span>{s.name}</span>
+                        <span>{student.name}</span>
                         <div>
                           <button
-                            className="btn btn-warning btn-sm me-2"
-                            onClick={() => {
-                              setEditIndex(s.index);
-                              setEditedStudent({ name: s.name, course: s.course });
-                            }}
+                            className="btn btn-sm btn-warning me-2"
+                            onClick={() => handleEditClick(index)}
                           >
-                            <Pencil size={14} />
+                            <Pencil size={16} />
                           </button>
-                          <button className="btn btn-danger btn-sm" onClick={() => deleteStudent(s.index)}>
-                            <Trash2 size={14} />
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleDeleteStudent(index)}
+                          >
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </>
                     )}
                   </li>
-                ))
-            )}
-          </ul>
-        </div>
-      ))}
+                ))}
+            </ul>
+          </div>
+        ))}
     </div>
   );
 }
