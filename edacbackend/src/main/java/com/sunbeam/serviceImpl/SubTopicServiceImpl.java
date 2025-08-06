@@ -50,4 +50,30 @@ public class SubTopicServiceImpl implements SubTopicService {
 			throw new InvalidInputException("Topic with given id is not present");
 		}
 	}
+	
+    @Override
+    public void deleteSubTopic(Long id) {
+        if (!subtopicDao.existsById(id)) {
+            throw new InvalidInputException("SubTopic not found");
+        }
+        subtopicDao.deleteById(id);
+    }
+    
+	@Override
+	public SubtopicDto updateSubTopic(Long id, SubtopicDto subTopicDto) {
+		SubTopics existingSubTopic = subtopicDao.findById(id)
+                .orElseThrow(() -> new InvalidInputException("SubTopic not found"));
+        
+        modelMapper.map(subTopicDto, existingSubTopic);
+        
+        // Update topic relationship if different
+        if (!existingSubTopic.getTopic().getId().equals(subTopicDto.getTopicId())) {
+            Topics newTopic = subtopicDao.findTopicById(subTopicDto.getTopicId());
+            
+            existingSubTopic.setTopic(newTopic);
+        }
+        
+        SubTopics updatedSubTopic = subtopicDao.save(existingSubTopic);
+        return modelMapper.map(updatedSubTopic, SubtopicDto.class);
+	}
 }

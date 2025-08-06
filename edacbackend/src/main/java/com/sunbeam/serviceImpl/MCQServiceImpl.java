@@ -9,6 +9,7 @@ import com.sunbeam.Dao.MCQDao;
 import com.sunbeam.customException.InvalidInputException;
 import com.sunbeam.dto.AddMcqDto;
 import com.sunbeam.dto.MCQDto;
+import com.sunbeam.dto.UpdateMCQDto;
 import com.sunbeam.entities.MCQ;
 import com.sunbeam.entities.SubTopics;
 import com.sunbeam.service.MCQService;
@@ -53,4 +54,25 @@ public class MCQServiceImpl implements MCQService {
 			throw new InvalidInputException("Sub Topic with given id is not present");
 		}
 	}
+	
+	@Override
+    public MCQDto updateMCQ(Long id, UpdateMCQDto updateDto) {
+        MCQ existingMCQ = mcqDao.findById(id)
+                .orElseThrow(() -> new InvalidInputException("MCQ not found with ID: " + id));
+        if (!existingMCQ.getQuestion().equals(updateDto.getQuestion()) && 
+            mcqDao.existsByQuestion(updateDto.getQuestion())) {
+            throw new InvalidInputException("MCQ already exists");
+        }
+        modelMapper.map(updateDto, existingMCQ);
+        MCQ updatedMCQ = mcqDao.save(existingMCQ);
+        return modelMapper.map(updatedMCQ, MCQDto.class);
+    }
+	
+    @Override
+    public void deleteMCQ(Long id) {
+        if (!mcqDao.existsById(id)) {
+            throw new InvalidInputException("MCQ not found with ID: " + id);
+        }
+        mcqDao.deleteById(id);
+    }
 }

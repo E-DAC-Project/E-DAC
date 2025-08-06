@@ -8,4 +8,6 @@ public interface SubTopicService {
 
 	List<SubtopicDto> getAllSubTopicByTopic(Long id);
 	String addNewSubTopic(SubtopicDto newSubTopic, Long id);
+	SubtopicDto updateSubTopic(Long id, SubtopicDto subTopicDto);
+    void deleteSubTopic(Long id);
 }

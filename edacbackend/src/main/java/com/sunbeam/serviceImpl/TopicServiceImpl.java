@@ -9,6 +9,7 @@ import com.sunbeam.Dao.TopicDao;
 import com.sunbeam.customException.InvalidInputException;
 import com.sunbeam.dto.TopicDto;
 import com.sunbeam.entities.Modules;
+import com.sunbeam.entities.SubTopics;
 import com.sunbeam.entities.Topics;
 import com.sunbeam.service.TopicService;
 
@@ -49,5 +50,34 @@ public class TopicServiceImpl implements TopicService {
 			
 			throw new InvalidInputException("Module with given id is not present");
 		}
+	}
+
+	@Override
+	public Topics updateTopic(Long id, TopicDto topicDetails) {
+		Topics existingTopic = topicDao.findById(id)
+				.orElseThrow(() -> new InvalidInputException("Topic not found with ID: " + id));
+
+		if (!existingTopic.getTopicName().equals(topicDetails.getTopicName())) {
+			Topics duplicateTopic = topicDao.findByTopicNameAndModuleId(topicDetails.getTopicName(), existingTopic.getModule().getId());
+			if (duplicateTopic != null) {
+				throw new InvalidInputException("Topic name '" + topicDetails.getTopicName() + "' already exists for this module.");
+			}
+		}
+		
+		
+		existingTopic.setTopicName(topicDetails.getTopicName()); 
+		return topicDao.save(existingTopic);
+	}
+
+	@Override
+	public void deleteTopic(Long id) {
+		if (!topicDao.existsById(id)) {
+			throw new InvalidInputException("Topic not found with ID: " + id);
+		}
+		List<SubTopics> list = topicDao.findSubTopicByTopicId(id);
+		for(SubTopics st: list) {
+			topicDao.deleteBySubTopicId(st.getId());
+		}
+		topicDao.deleteById(id);
 	}
 }

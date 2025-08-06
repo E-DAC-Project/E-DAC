@@ -28,7 +28,7 @@ public class Topics extends BaseEntity {
 	@NotBlank(message = "Topic name not be null")
 	private String topicName;
 	@Column(name = "status", columnDefinition = "BOOLEAN DEFAULT TRUE" )
-	private boolean status;
+	private boolean status=true;
 	@ManyToOne
 	@JoinColumn(name = "moduleId", nullable = false)
 	private Modules module;

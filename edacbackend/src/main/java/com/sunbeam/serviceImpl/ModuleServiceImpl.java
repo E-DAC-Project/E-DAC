@@ -1,6 +1,7 @@
 package com.sunbeam.serviceImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,6 @@ import lombok.AllArgsConstructor;
 @Service
 @Transactional
 @AllArgsConstructor
-
 public class ModuleServiceImpl implements ModuleService {
 
 	private final ModuleDao moduleDao;
@@ -42,5 +42,26 @@ public class ModuleServiceImpl implements ModuleService {
 		Modules m = modelMapper.map(newModule, Modules.class);
 		Modules addedModule = moduleDao.save(m);
 		return addedModule.getModuleName() + " Module added successfully";
+	}
+
+	@Override
+	public Modules updateModule(Long id, AddModuleDto moduleDetails) {
+		Modules existingModule = moduleDao.findById(id)
+				.orElseThrow(() -> new InvalidInputException("Module not found with ID: " + id));
+		
+		modelMapper.map(moduleDetails, existingModule);
+		if (!existingModule.getModuleName().equals(moduleDetails.getModuleName()) && moduleDao.existsByModuleName(moduleDetails.getModuleName())) {
+            throw new InvalidInputException("Module with name " + moduleDetails.getModuleName() + " already exists.");
+        }
+		
+		return moduleDao.save(existingModule);
+	}
+
+	@Override
+	public void deleteModule(Long id) {
+		Modules m = moduleDao.findById(id)
+				.orElseThrow(()-> new InvalidInputException("Module not found with ID: " + id));
+		m.setStatus(false);
+		//moduleDao.save(m);
 	}
 }

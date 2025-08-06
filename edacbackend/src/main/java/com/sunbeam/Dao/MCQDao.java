@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.sunbeam.entities.MCQ;
 import com.sunbeam.entities.SubTopics;
 
+@Repository
 public interface MCQDao extends JpaRepository<MCQ, Long>{
 
 	@Query("select m from MCQ m where m.subTopic.id=:subtopicId")
@@ -16,4 +18,6 @@ public interface MCQDao extends JpaRepository<MCQ, Long>{
 	SubTopics findSubTopicById(Long subTopicId);
 	@Query("select m from MCQ m where m.question=:newMcq and m.subTopic.id=:subTopicId")
 	MCQ findByMcqAndSubTopicId(String newMcq, Long subTopicId);
+	
+	boolean existsByQuestion(String question);
 }
