@@ -15,10 +15,10 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const [loginData, setLoginData] = useState({ username: "", password: "" });
+  const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [signupData, setSignupData] = useState({
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     phone: "",
     email: "",
     password: "",
@@ -27,13 +27,13 @@ const Login = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    const { firstname, lastname, phone, email, password, confirmPassword } =
+    const { firstName, lastName, phone, email, password, confirmPassword } =
       signupData;
 
     // Frontend validation
     if (
-      !firstname ||
-      !lastname ||
+      !firstName ||
+      !lastName ||
       !phone ||
       !email ||
       !password ||
@@ -58,15 +58,15 @@ const Login = () => {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:3000/register",
+        "http://localhost:8080/users/signup",
         signupData
       );
-      if (res.status === 200) {
+      if (res.status === 201) {
         toast.success("Signup successful! Please login.");
         setIsSignUpMode(false);
         setSignupData({
-          firstname: "",
-          lastname: "",
+          firstName: "",
+          lastName: "",
           phone: "",
           email: "",
           password: "",
@@ -76,6 +76,7 @@ const Login = () => {
         toast.error(res.data.message || "Signup failed");
       }
     } catch (err) {
+      console.log("Exception: "+err);
       toast.error("Something went wrong during signup.");
     } finally {
       setLoading(false);
@@ -86,31 +87,35 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:3000/login", loginData);
+      const res = await axios.post("http://localhost:8080/users/signin", loginData);
+      console.log(res);
       if (res.status === 200) {
-        const { token, user } = res.data;
-
+        const {token, Role, Name} = res.data;
         if (rememberMe) {
           localStorage.setItem("token", token);
-          localStorage.setItem("user", JSON.stringify(user));
+          localStorage.setItem("Name", Name);
+          localStorage.setItem("role", Role);
         } else {
           sessionStorage.setItem("token", token);
-          sessionStorage.setItem("user", JSON.stringify(user));
+          sessionStorage.setItem("Name", Name);
+          sessionStorage.setItem("role", Role);
         }
 
-        toast.success("Login successful!");
+        toast.success("Login Sucessful!!");
 
-        if (user.role === "admin") {
+        if (Role === "ROLE_ADMIN") {
           navigate("/admindashboard");
-        } else if (user.role === "student") {
+        } else if (Role === "ROLE_STUDENT") {
           navigate("/studentdashboard");
         } else {
           toast.warning("Unknown user role");
         }
       } else {
+        console.log(res);
         toast.error(res.data.message || "Login failed");
       }
     } catch (err) {
+      console.log(err);
       toast.error("Something went wrong during login.");
     } finally {
       setLoading(false);
@@ -131,9 +136,9 @@ const Login = () => {
                 type="text"
                 placeholder="Username"
                 required
-                value={loginData.username}
+                value={loginData.email}
                 onChange={(e) =>
-                  setLoginData({ ...loginData, username: e.target.value })
+                  setLoginData({ ...loginData, email: e.target.value })
                 }
               />
             </div>
@@ -168,8 +173,8 @@ const Login = () => {
             <img src={logo} width="100px" alt="Brand" />
             <h2 className="title">Sign up</h2>
             {[
-              "firstname",
-              "lastname",
+              "firstName",
+              "lastName",
               "phone",
               "email",
               "password",
