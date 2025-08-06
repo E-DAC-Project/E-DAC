@@ -25,9 +25,8 @@ function AdminCourses() {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
           },
         }
-      });
-      // console.log(response.data);
       );
+      // console.log(response.data);
       console.log(response.data);
       setCourses(response.data);
     } catch (error) {
