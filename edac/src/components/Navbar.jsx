@@ -27,8 +27,6 @@ export default function Navbar() {
           <li className="nav-item"><Link className="nav-link" to="/about">About</Link></li>
           <li className="nav-item"><Link className="nav-link" to="/modules">Modules</Link></li>
           <li className="nav-item"><Link className="nav-link" to="/contact">Contact Us</Link></li>
-          <li className='nav-item'><Link className="nav-link" to="/adminDashboard">Admin Dashboard</Link> </li>
-          <li className='nav-item'><Link className="nav-link" to="/studentDashboard">Student Dashboard</Link> </li>
         </ul>
         <form className="d-flex me-3">
           <input className="form-control rounded-pill px-3" type="search" placeholder="Search" />
