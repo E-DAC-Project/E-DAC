@@ -81,11 +81,7 @@ function AdminCourses() {
     const courseToDelete = courses[index];
 
     try {
-<<<<<<< HEAD
-      await axios.delete(`/${courseToDelete.id}`);
-=======
       await axios.delete(`/api/courses/${courseToDelete.id}`);
->>>>>>> 867c969890030c44060d9f74dce3fe9a20a91dc9
       const updated = [...courses];
       updated.splice(index, 1);
       setCourses(updated);
