@@ -25,13 +25,10 @@ function AdminCourses() {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
           },
         }
-<<<<<<< HEAD
       });
       // console.log(response.data);
-=======
       );
       console.log(response.data);
->>>>>>> eaaecb246c0ee169af9bd59f58e6b0fd1f8596bd
       setCourses(response.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -90,10 +87,6 @@ function AdminCourses() {
 
     try {
       await axios.delete(`/api/courses/${courseToDelete.id}`);
-<<<<<<< HEAD
-=======
-
->>>>>>> eaaecb246c0ee169af9bd59f58e6b0fd1f8596bd
       const updated = [...courses];
       updated.splice(index, 1);
       setCourses(updated);
