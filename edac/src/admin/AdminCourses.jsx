@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
-import { Pencil, Trash2, Plus } from "lucide-react";
+// import { useOutletContext } from "react-router-dom";
+import { Plus } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -23,7 +23,7 @@ function AdminCourses() {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`
         }
       });
-      console.log(response.data);
+      // console.log(response.data);
       setCourses(response.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -81,11 +81,7 @@ function AdminCourses() {
     const courseToDelete = courses[index];
 
     try {
-<<<<<<< HEAD
-      await axios.delete(`/${courseToDelete.id}`);
-=======
       await axios.delete(`/api/courses/${courseToDelete.id}`);
->>>>>>> 867c969890030c44060d9f74dce3fe9a20a91dc9
       const updated = [...courses];
       updated.splice(index, 1);
       setCourses(updated);
