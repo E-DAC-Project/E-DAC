@@ -73,12 +73,12 @@ function AdminInterview() {
           className="form-select"
           value={selectedCourse}
           onChange={(e) => setSelectedCourse(e.target.value)}
-        >
+          >
           <option value="">-- Select Course --</option>
-          {courses.map((course, i) => (
+          {courses?.map((course, i) => (
             <option key={i} value={course}>{course}</option>
           ))}
-        </select>
+      </select>
       </div>
 
       {selectedCourse && (
