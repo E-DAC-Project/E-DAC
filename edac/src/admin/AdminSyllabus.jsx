@@ -4,7 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 
 function AdminSyllabus() {
-  const { courses } = useOutletContext();
+  const { courses = [] } = useOutletContext(); // ✅ safe default to empty array
 
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -108,8 +108,10 @@ function AdminSyllabus() {
           }}
         >
           <option value="">-- Choose Course --</option>
-          {courses.map((course, i) => (
-            <option key={i} value={course}>{course}</option>
+          {courses?.map((course, i) => (
+            <option key={i} value={course}>
+              {course}
+            </option>
           ))}
         </select>
       </div>
