@@ -1,22 +1,13 @@
-import React, { useState } from "react";
+import React, {useState } from "react";
 import { Outlet } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./AdminDashboard.css";
 import AdminSidebar from "../components/AdminSidebar";
 
 function AdminDashboard() {
-  const [courses, setCourses] = useState([
-    "C++",
-    "Core Java",
-    ".NET",
-    "Data Structures",
-    "Web Programming",
-    "Operating System",
-    "Database Management",
-    "Advance Java",
-    "Aptitude and Reasoning",
-  ]);
+  const [courses, setCourses] = useState(null);
 
+  
   return (
     <div className="container-fluid dashboard-wrapper">
       <div className="row">
