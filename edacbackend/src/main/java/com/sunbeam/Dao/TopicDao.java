@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.sunbeam.entities.Modules;
+import com.sunbeam.entities.SubTopics;
 import com.sunbeam.entities.Topics;
 
 public interface TopicDao extends JpaRepository<Topics, Long>{
@@ -17,4 +18,8 @@ public interface TopicDao extends JpaRepository<Topics, Long>{
 	Modules findModuleById(Long id);
 	@Query("select t from Topics t where t.topicName=:name and t.module.id=:id")
 	Topics findByTopicNameAndModuleId(String name, Long id);
+	@Query("select st from SubTopics st where st.topic.id =:id")
+	List<SubTopics> findSubTopicByTopicId(long id);
+	@Query("delete from SubTopics st where st.id=:id")
+	void deleteBySubTopicId(Long id);
 }

@@ -1,7 +1,5 @@
 package com.sunbeam.dto;
 
-import com.sunbeam.entities.Difficulty;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,16 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MCQDto {
+public class InterviewQuestionResponseDto {
     private Long id;
     private String question;
-    private String optionA;
-    private String optionB;
-    private String optionC;
-    private String optionD;
-    private String correctAnswer;
-    private Difficulty difficulty;
+    private String answer;
+    private String difficulty;
     private boolean status;
     private Long subTopicId;
 }
-

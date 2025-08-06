@@ -8,4 +8,6 @@ public interface ReferenceBookService {
 
 	List<ReferenceBookDto> getReferenceBookByModule(Long id);
 	String addNewReferenceBook(ReferenceBookDto rbDto, Long moduleId);
+	ReferenceBookDto updateReferenceBook(Long id, ReferenceBookDto rbDto);
+	void deleteReferenceBook(Long id);
 }

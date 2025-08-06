@@ -37,9 +37,9 @@ public class Modules extends BaseEntity {
 	@Column(name = "status", columnDefinition = "BOOLEAN DEFAULT TRUE" )
 	private boolean status = true;
 	@Column(name = "period")
+	@Min(1)
+	@Max(6)
 	@NotNull
-	@Min(value = 1, message = "Module period must be at least 1 month")
-    @Max(value = 6, message = "Module period cannot be more than 6 months")
 	private int modulePeriod;
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Topics> topicList = new ArrayList<Topics>();
