@@ -18,12 +18,20 @@ function AdminCourses() {
 
   const fetchCourses = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/module/getModules", {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`
+      const response = await axios.get(
+        "http://localhost:8080/module/getModules",
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         }
+<<<<<<< HEAD
       });
       // console.log(response.data);
+=======
+      );
+      console.log(response.data);
+>>>>>>> eaaecb246c0ee169af9bd59f58e6b0fd1f8596bd
       setCourses(response.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -59,13 +67,13 @@ function AdminCourses() {
         {
           moduleName: name,
           description: desc,
-          modulePeriod: period
+          modulePeriod: period,
         },
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
           },
-          withCredentials: true
+          withCredentials: true,
         }
       );
 
@@ -82,6 +90,10 @@ function AdminCourses() {
 
     try {
       await axios.delete(`/api/courses/${courseToDelete.id}`);
+<<<<<<< HEAD
+=======
+
+>>>>>>> eaaecb246c0ee169af9bd59f58e6b0fd1f8596bd
       const updated = [...courses];
       updated.splice(index, 1);
       setCourses(updated);
@@ -102,7 +114,9 @@ function AdminCourses() {
     const courseToUpdate = courses[index];
 
     try {
-      const res = await axios.put(`/api/courses/${courseToUpdate.id}`, { name: trimmed });
+      const res = await axios.put(`/api/courses/${courseToUpdate.id}`, {
+        name: trimmed,
+      });
       const updated = [...courses];
       updated[index] = res.data.name;
       setCourses(updated);
@@ -114,8 +128,6 @@ function AdminCourses() {
       toast.error("Failed to update course.");
     }
   };
-
-
 
   return (
     <div>
@@ -136,7 +148,9 @@ function AdminCourses() {
           placeholder="New course description"
         />
       </div>
-      <label className="block mb-2 font-medium">Module Period (in months)</label>
+      <label className="block mb-2 font-medium">
+        Module Period (in months)
+      </label>
       <select
         className="border p-2 w-full mb-4"
         value={module_period}
@@ -159,11 +173,25 @@ function AdminCourses() {
         {courses.map((mod) => (
           <div key={mod.id} className="card mb-3 p-3 shadow-sm">
             <h4>{mod.moduleName}</h4>
-            <p><strong>Description:</strong> {mod.description}</p>
-            <p><strong>Period:</strong> {mod.modulePeriod} month</p>
+            <p>
+              <strong>Description:</strong> {mod.description}
+            </p>
+            <p>
+              <strong>Period:</strong> {mod.modulePeriod} month
+            </p>
             <div className="btn-group">
-              <button className="btn btn-primary" onClick={() => updateCourse(mod)}>Edit</button>
-              <button className="btn btn-danger" onClick={() => deleteCourse(mod.id)}>Delete</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => updateCourse(mod)}
+              >
+                Edit
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={() => deleteCourse(mod.id)}
+              >
+                Delete
+              </button>
               <button className="btn btn-success">Add Topic</button>
             </div>
           </div>
@@ -173,5 +201,3 @@ function AdminCourses() {
   );
 }
 export default AdminCourses;
-
-
