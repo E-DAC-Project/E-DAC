@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class ReferenceBookDto {
 
-	private String book_title;
+	private String bookTitle;
 	private String author;
 	private String link;
 }
