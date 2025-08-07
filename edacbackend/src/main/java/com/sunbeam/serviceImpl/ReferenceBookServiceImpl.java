@@ -34,7 +34,7 @@ public class ReferenceBookServiceImpl implements ReferenceBookService {
     public String addNewReferenceBook(ReferenceBookDto rbDto, Long moduleId) {
         Modules m = rbDao.findModuleById(moduleId);
         if (m != null) {
-            ReferenceBooks rb = rbDao.findByBookNameAndModuleId(rbDto.getBook_title(), moduleId);
+            ReferenceBooks rb = rbDao.findByBookNameAndModuleId(rbDto.getBookTitle(), moduleId);
             if (rb != null) {
                 throw new InvalidInputException("Reference book of given title already exists for given module");
             }
@@ -50,25 +50,24 @@ public class ReferenceBookServiceImpl implements ReferenceBookService {
 
     @Override
     public ReferenceBookDto updateReferenceBook(Long id, ReferenceBookDto rbDto) {
-//        ReferenceBooks existingBook = rbDao.findById(id)
-//                .orElseThrow(() -> new InvalidInputException("Reference book not found with ID: " + id));
-//
-//        // Check for duplicate book title in the same module
-//        if (!existingBook.getBook_title().equals(rbDto.getBook_title()) &&
-//            rbDao.existsByBookNameAndModuleId(rbDto.getBook_title(), existingBook.getModule().getId())) {
-//            throw new InvalidInputException("Reference book of given title already exists for the module");
-//        }
-//
-//        // Update fields
-//        existingBook.setBook_title(rbDto.getBook_title());
-//        existingBook.setAuthor(rbDto.getAuthor());
-//        existingBook.setPublisher(rbDto.getPublisher());
-//        existingBook.setYear(rbDto.getYear());
-//        existingBook.setStatus(rbDto.isStatus());
-//
-//        ReferenceBooks updatedBook = rbDao.save(existingBook);
-//        return modelMapper.map(updatedBook, ReferenceBookDto.class);
-    	return null;
+        ReferenceBooks existingBook = rbDao.findById(id)
+                .orElseThrow(() -> new InvalidInputException("Reference book not found with ID: " + id));
+
+    
+        if (!existingBook.getBookTitle().equals(rbDto.getBookTitle()) &&
+            rbDao.existsByBookTitleAndModuleId(rbDto.getBookTitle(), existingBook.getModule().getId())) {
+            throw new InvalidInputException("Reference book of given title already exists for the module");
+        }
+
+        // Update fields
+        existingBook.setBookTitle(rbDto.getBookTitle());
+        existingBook.setAuthor(rbDto.getAuthor());
+    	existingBook.setAuthor(rbDto.getLink());
+        
+
+        ReferenceBooks updatedBook = rbDao.save(existingBook);
+        return modelMapper.map(updatedBook, ReferenceBookDto.class);
+    	
     }
 
     @Override

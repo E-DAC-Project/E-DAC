@@ -14,6 +14,7 @@ public interface ReferenceBookDao extends JpaRepository<ReferenceBooks, Long>{
 	List<ReferenceBooks> findReferenceBooksByModuleId(Long moduleId);
 	@Query("select m from Modules m where m.id=:id")
 	Modules findModuleById(Long id);
-	@Query("select r from ReferenceBooks r where r.book_title=:name and r.module.id=:id")
+	@Query("select r from ReferenceBooks r where r.bookTitle=:name and r.module.id=:id")
 	ReferenceBooks findByBookNameAndModuleId(String name, Long id);
+	boolean existsByBookTitleAndModuleId(String book_title, Long id);
 }

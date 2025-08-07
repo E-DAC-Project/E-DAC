@@ -22,7 +22,7 @@ public class ReferenceBooks extends BaseEntity {
 
 	@Column(name = "book_title", length = 50)
 	@NotBlank(message = "book name not be null")
-	private String book_title;
+	private String bookTitle;
 	@Column(name = "author", length = 50)
 	@NotBlank(message = "author name not be null")
 	private String author;
