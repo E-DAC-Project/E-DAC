@@ -85,7 +85,7 @@ public class SecurityConfiguration {
 		session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		//5. add custom JWT filter before -UserNamePasswordAuthFilter 
 		http.addFilterBefore(customJwtFilter
-				, UsernamePasswordAuthenticationFilter.class);
+				,UsernamePasswordAuthenticationFilter.class);
 		//6. Customize error code of SC 401 , in case of authentication failure
 		http.exceptionHandling
 		(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint));
