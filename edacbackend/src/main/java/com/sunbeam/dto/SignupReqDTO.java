@@ -21,7 +21,7 @@ public class SignupReqDTO{
 	@NotBlank(message = "first name must be supplied")
 	private String firstName;
 	@NotBlank(message = "last name must be supplied")
-	@Size(min = 4,max=20,message = "invalid last name length")
+	@Size(max=20,message = "invalid last name length")
 	private String lastName;
 	
 	@NotBlank(message = "Email must be supplied")

@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,36 +35,47 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return;
 		}
+		try {
 		// 1. Check HTTP request header - "Authorization"
-		System.out.println(request.getHeader("Authorization"));
-		String headerValue = request.getHeader("Authorization");
-		if (headerValue != null && headerValue.startsWith("Bearer ")) {
-			// => JWT exists
-			// 2 . Extract JWT
-			String jwt = headerValue.substring(7);
-			System.out.println("JWT in request header {} "+ jwt);
-			/*
-			 * 3 . Validate Token -> in case of success populate Authentication object . -
-			 * call JwtUtils 's method
-			 * 
-			 */
-			Authentication authentication = 
-					jwtUtils.populateAuthenticationTokenFromJWT(jwt);
-			// => no exc -> invalid token ,invalid signature , jwt expired....
-			log.info("auth object from JWT {} ", authentication);
-			/*
-			 * 4. Store authentication object - under Spring security 
-			 * ctx holder - 
-			 * scope :
-			 * current request only (since Session creation policy - STATELESS)
-			 */
-			SecurityContextHolder
-			.getContext() //rets current sec ctx
-			.setAuthentication(authentication);
-	
-		}
-		//allow the request to continue ....
-		filterChain.doFilter(request, response);
+			System.out.println(request.getHeader("Authorization"));
+			String headerValue = request.getHeader("Authorization");
+			if (headerValue != null && headerValue.startsWith("Bearer ")) {
+				// => JWT exists
+				// 2 . Extract JWT
+				String jwt = headerValue.substring(7);
+				System.out.println("JWT in request header {} "+ jwt);
+				/*
+				 * 3 . Validate Token -> in case of success populate Authentication object . -
+				 * call JwtUtils 's method
+				 * 
+				 */
+				Authentication authentication = 
+						jwtUtils.populateAuthenticationTokenFromJWT(jwt);
+				// => no exc -> invalid token ,invalid signature , jwt expired....
+				log.info("auth object from JWT {} ", authentication);
+				/*
+				 * 4. Store authentication object - under Spring security 
+				 * ctx holder - 
+				 * scope :
+				 * current request only (since Session creation policy - STATELESS)
+				 */
+				SecurityContextHolder
+				.getContext() //rets current sec ctx
+				.setAuthentication(authentication);
+		
+			}
+			//allow the request to continue ....
+			filterChain.doFilter(request, response);
+		} catch(ExpiredJwtException ex) {
+	        // Handle token expiration
+	        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	        response.setContentType("application/json");
+	        response.getWriter().write("{\"error\":\"JWT expired\"}");
+	    } catch (Exception ex) {
+	        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	        response.setContentType("application/json");
+	        response.getWriter().write("{\"error\":\"Invalid or missing JWT\"}");
+	    }
 	}
 
 }

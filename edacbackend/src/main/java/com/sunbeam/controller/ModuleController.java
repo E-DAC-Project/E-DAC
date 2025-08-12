@@ -47,9 +47,9 @@ public class ModuleController {
 	}
 	
 	@PutMapping("/editModule/{id}") 
-	public ResponseEntity<Modules> updateModule(@PathVariable Long id, @RequestBody AddModuleDto moduleDetails) { 
-		Modules updateModule = moduleService.updateModule(id, moduleDetails);
-		return ResponseEntity.ok(updateModule);
+	public ResponseEntity<String> updateModule(@PathVariable Long id, @RequestBody AddModuleDto moduleDetails) { 
+		moduleService.updateModule(id, moduleDetails);
+		return ResponseEntity.ok().body("Module updated successfully");
 	}
 	
 	@DeleteMapping("/deleteModule/{id}") 

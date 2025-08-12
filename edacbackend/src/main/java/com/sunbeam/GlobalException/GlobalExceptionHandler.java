@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.sunbeam.customException.InvalidInputException;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
@@ -24,5 +25,11 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<?> handelInvalidInputException(InvalidInputException e) {
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	}
+	
+	@ExceptionHandler(ExpiredJwtException.class)
+	public ResponseEntity<?> handelExpiredJwtException(ExpiredJwtException e) {
+		
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Token expired...");
 	}
 }
