@@ -1,20 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // import { useOutletContext } from "react-router-dom";
 import { Plus } from "lucide-react";
-import axios from "axios";
 import { toast } from "react-toastify";
+import axios from "../pages/axios";
+import { useNavigate } from "react-router-dom";
 
 function AdminCourses() {
   const [courses, setCourses] = useState([]);
   const [courseName, setCourseName] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
   const [module_period, setModule_period] = useState("");
-  const [editIndex, setEditIndex] = useState(null);
-  const [editedCourse, setEditedCourse] = useState("");
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({ moduleName: '', description: '', modulePeriod: 1 });
+  const [editId, setEditId] = useState(null);
+  const [token, setToken] = useState(null);
+  const navigate = useNavigate();
+
+  const formRef = useRef(null);
 
   useEffect(() => {
+    let savedToken;
+    if (sessionStorage.length !== 0) {
+      savedToken = sessionStorage.getItem("token");
+    } else {
+      savedToken = localStorage.getItem("token");
+    }
+    setToken(savedToken);
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/module/getModules",
+          {
+            headers: {
+              Authorization: `Bearer ${savedToken}`,
+            },
+          }
+        );
+        // console.log(response.data);
+        setCourses(response.data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
     fetchCourses();
   }, []);
+
 
   const fetchCourses = async () => {
     try {
@@ -22,7 +52,7 @@ function AdminCourses() {
         "http://localhost:8080/module/getModules",
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -34,6 +64,35 @@ function AdminCourses() {
     }
   };
 
+  const handleEdit = async (module) => {
+    setEditId(module.id);
+    setEditMode(true);
+    setFormData({
+      moduleName: module.moduleName,
+      description: module.description,
+      modulePeriod: module.modulePeriod,
+    });
+    formRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      console.log(token)
+      await axios.put(`http://localhost:8080/module/editModule/${editId}`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }, withCredentials: true
+        });
+      setEditMode(false);
+      setFormData({ moduleName: '', description: '', modulePeriod: 1 });
+      setEditId(null);
+      fetchCourses();
+      toast.success("Module updated!");
+    } catch (error) {
+      console.error("Update failed:", error);
+      toast.warning("Failed to update module");
+    }
+  };
   const addCourse = async () => {
     const name = courseName.trim();
     const desc = courseDescription.trim();
@@ -57,7 +116,7 @@ function AdminCourses() {
     }
 
     try {
-      console.log(sessionStorage.getItem("token"));
+      
       const res = await axios.post(
         "http://localhost:8080/module/addModule",
         {
@@ -67,7 +126,7 @@ function AdminCourses() {
         },
         {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
           withCredentials: true,
         }
@@ -82,42 +141,25 @@ function AdminCourses() {
   };
 
   const deleteCourse = async (index) => {
-    const courseToDelete = courses[index];
-
-    try {
-      await axios.delete(`/api/courses/${courseToDelete.id}`);
-      const updated = [...courses];
-      updated.splice(index, 1);
-      setCourses(updated);
-      toast.success("Course deleted.");
-    } catch (error) {
-      console.error("Delete course error:", error);
-      toast.error("Failed to delete course.");
-    }
-  };
-
-  const updateCourse = async (index) => {
-    const trimmed = editedCourse.trim();
-    if (!trimmed) {
-      toast.warning("Course name cannot be empty.");
+    if (!window.confirm("Are you sure you want to delete this module?")) {
       return;
     }
 
-    const courseToUpdate = courses[index];
-
     try {
-      const res = await axios.put(`/api/courses/${courseToUpdate.id}`, {
-        name: trimmed,
-      });
-      const updated = [...courses];
-      updated[index] = res.data.name;
-      setCourses(updated);
-      setEditIndex(null);
-      setEditedCourse("");
-      toast.success("Course updated!");
+      const res = await axios.delete(
+        `http://localhost:8080/module/deleteModule/${index}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+      toast.success("Module deleted!");
+      fetchCourses();
     } catch (error) {
-      console.error("Update course error:", error);
-      toast.error("Failed to update course.");
+      console.error("Delete course error:", error);
+      toast.error("Failed to delete course.");
     }
   };
 
@@ -161,9 +203,51 @@ function AdminCourses() {
           <Plus size={16} /> Add
         </button>
       </div>
+
+
+      <form ref={formRef}>
+         
+        {editMode && (
+        <div className="mb-3 p-3 border rounded shadow bg-gray-100">
+          <h3 className="text-primary mb-4">Edit Module</h3>
+          <input
+            type="text"
+            value={formData.moduleName}
+            onChange={(e) => setFormData({ ...formData, moduleName: e.target.value })}
+            placeholder="Module Name"
+            className="block mb-2 p-2 w-full border rounded"
+          />
+          <input
+            type="text"
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            placeholder="Description"
+            className="block mb-5 p-2 w-full border rounded"
+          />
+          <select
+            value={formData.modulePeriod}
+            onChange={(e) => setFormData({ ...formData, modulePeriod: parseInt(e.target.value) })}
+            className="block mb-4 p-2 w-full border rounded"
+          >
+            {[1, 2, 3, 4, 5, 6].map((m) => (
+              <option key={m} value={m}>{m} month{m > 1 ? 's' : ''}</option>
+            ))}
+          </select>
+          <button
+            onClick={handleUpdate}
+            className="btn btn-primary w-100"
+          >
+            Update Module
+          </button>
+        </div>
+      )}
+      </form>
+
+
       <div className="module-list">
         {courses.map((mod) => (
-          <div key={mod.id} className="card mb-3 p-3 shadow-sm">
+          <div key={mod.id} className="card mb-3 p-3 shadow-sm" onClick={() => navigate(`/adminDashboard/syllabus/${mod.id}`)}
+          style={{ cursor: "pointer" }}>
             <h4>{mod.moduleName}</h4>
             <p>
               <strong>Description:</strong> {mod.description}
@@ -174,7 +258,7 @@ function AdminCourses() {
             <div className="btn-group">
               <button
                 className="btn btn-primary"
-                onClick={() => updateCourse(mod)}
+                onClick={() => handleEdit(mod)}
               >
                 Edit
               </button>

@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class ModuleDto {
 
+	private Long id;
 	private String moduleName;
 	private String description;
 	private int modulePeriod;

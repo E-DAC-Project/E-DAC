@@ -13,7 +13,12 @@ export default function StudentSidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    if(sessionStorage.length!=0) {
+      sessionStorage.clear();
+    } else {
+      localStorage.clear();
+      
+    }
     navigate("/login");
   };
 

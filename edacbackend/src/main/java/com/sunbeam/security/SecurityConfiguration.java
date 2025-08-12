@@ -72,11 +72,10 @@ public class SecurityConfiguration {
 		request.requestMatchers("/swagger-ui/**","/v**/api-docs/**","/users/signin","/users/signup").permitAll()
 		//6. restaurants - GET - to get all restaurants  - no authentication
 		.requestMatchers(HttpMethod.GET).permitAll()
-		//get restaurant by id - customer
-		.requestMatchers(HttpMethod.GET,"/restaurants/{id}")
-		.hasRole("CUSTOMER")
 		//update restaurant details - admin
-		.requestMatchers(HttpMethod.PUT,"/restaurants/{id}").hasRole("ADMIN")
+		.requestMatchers(HttpMethod.POST).hasRole("ADMIN")
+		.requestMatchers(HttpMethod.PUT).hasRole("ADMIN")
+		.requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
 		.anyRequest().authenticated());
 		//3. enable HTTP basic auth
 	//	http.httpBasic(Customizer.withDefaults());
