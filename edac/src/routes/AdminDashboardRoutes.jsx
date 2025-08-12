@@ -17,7 +17,7 @@ function AdminDashboardRoutes() {
         <Route index element={<Navigate to="courses" replace />} />
         <Route path="courses" element={<AdminCourses />} />
         <Route path="students" element={<AdminStudents />} />
-        <Route path="syllabus" element={<AdminSyllabus />} />
+        <Route path="syllabus/:id" element={<AdminSyllabus />} />
         <Route path="mcq" element={<AdminMCQ />} />
         <Route path="interview" element={<AdminInterview />} />
         <Route path="referenceBooks" element={<AdminBooks />} />
