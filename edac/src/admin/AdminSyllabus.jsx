@@ -139,7 +139,6 @@ const ModuleDetails = () => {
   return (
     <div className="container mt-4">
       <h2>Module Topics</h2>
-
       {/* Add Topic Form */}
       <div className="mb-3 d-flex">
         <input
@@ -153,7 +152,6 @@ const ModuleDetails = () => {
           <FaPlus /> Add Topic
         </button>
       </div>
-
       {topics.map((topic) => (
         <div key={topic.id} className="card mb-2">
           <div

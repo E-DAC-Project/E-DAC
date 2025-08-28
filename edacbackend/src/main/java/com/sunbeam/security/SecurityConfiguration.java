@@ -108,6 +108,10 @@ public class SecurityConfiguration {
 
 		    // All other requests require authentication
 		    .anyRequest().authenticated());
+		.requestMatchers(HttpMethod.POST).hasRole("ADMIN")
+		.requestMatchers(HttpMethod.PUT).hasRole("ADMIN")
+		.requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
+		.anyRequest().authenticated());
 		//3. enable HTTP basic auth
 	//	http.httpBasic(Customizer.withDefaults());
 		//4. set session creation policy - stateless
