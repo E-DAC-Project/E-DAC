@@ -21,7 +21,7 @@ function AdminDashboardRoutes() {
         <Route path="mcq" element={<AdminMCQ />} />
         <Route path="interview" element={<AdminInterview />} />
         <Route path="referenceBooks" element={<AdminBooks />} />
-        <Route path="examLinks" element={<AdminExams />} />
+        <Route path="examLinks/:id" element={<AdminExams />} />
       </Route>
     </Routes>
   );

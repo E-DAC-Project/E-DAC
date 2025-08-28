@@ -4,28 +4,33 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sunbeam.dto.SubtopicDto;
+import com.sunbeam.dto.addSubTopicDto;
 import com.sunbeam.service.SubTopicService;
 
 import lombok.AllArgsConstructor;
 
 @RestController
+@RequestMapping("/subTopics")
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class SubTopicController {
 
 	private final SubTopicService subTopicService;
 	
-	@GetMapping("/subTopics")
-	public ResponseEntity<?> getSubTopicByTopic(@RequestParam Long id) {
+	@GetMapping("/getSubTopics/{id}")
+	public ResponseEntity<?> getSubTopicByTopic(@PathVariable Long id) {
 		
 		List<SubtopicDto> subTopicList = subTopicService.getAllSubTopicByTopic(id);
 		if(subTopicList.isEmpty()) {
@@ -35,7 +40,7 @@ public class SubTopicController {
 		return ResponseEntity.ok(subTopicList);
 	}
 	@PostMapping("/addSubTopic")
-	public String addSubTopic(@RequestBody SubtopicDto newSubTopic, @RequestParam Long topicId) {
+	public String addSubTopic(@RequestBody addSubTopicDto newSubTopic, @RequestParam Long topicId) {
 		
 		return subTopicService.addNewSubTopic(newSubTopic, topicId);
 	}

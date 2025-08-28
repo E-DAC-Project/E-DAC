@@ -9,10 +9,17 @@ import {
   FaUser,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 
 export default function AdminSidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+  // Example: check if path contains "topics"
+  const isInModule = location.pathname.includes("/syllabus/");
+  
+  // Example: check if path contains "subtopics"
+  const isInSubtopic = location.pathname.includes("/subtopics/");
 
   const handleLogout = () => {
     if(sessionStorage.length!=0) {
@@ -49,31 +56,39 @@ export default function AdminSidebar() {
               <FaUser className="me-2" /> Students
             </NavLink>
           </li>
-          <li className="nav-item mb-2">
+          {/* <li className="nav-item mb-2">
             <NavLink to="syllabus" className="nav-link text-white d-flex align-items-center">
               <FaFileAlt className="me-2" /> Syllabus
             </NavLink>
-          </li>
-          <li className="nav-item mb-2">
-            <NavLink to="mcq" className="nav-link text-white d-flex align-items-center">
-              <FaQuestionCircle className="me-2" /> MCQs
-            </NavLink>
-          </li>
-          <li className="nav-item mb-2">
-            <NavLink to="interview" className="nav-link text-white d-flex align-items-center">
-              <FaClipboardList className="me-2" /> Interview Questions
-            </NavLink>
-          </li>
-          <li className="nav-item mb-2">
-            <NavLink to="referenceBooks" className="nav-link text-white d-flex align-items-center">
-              <FaBookOpen className="me-2" /> Reference Books
-            </NavLink>
-          </li>
-          <li className="nav-item mb-2">
-            <NavLink to="examLinks" className="nav-link text-white d-flex align-items-center">
-              <FaLink className="me-2" /> Exam Links
-            </NavLink>
-          </li>
+          </li> */}
+          {isInSubtopic && (
+            <>
+            <li className="nav-item mb-2">
+              <NavLink to="mcq" className="nav-link text-white d-flex align-items-center">
+                <FaQuestionCircle className="me-2" /> MCQs
+              </NavLink>
+            </li>
+            <li className="nav-item mb-2">
+              <NavLink to="interview" className="nav-link text-white d-flex align-items-center">
+                <FaClipboardList className="me-2" /> Interview Questions
+              </NavLink>
+            </li>
+            </>
+          )}
+          {isInModule && (
+            <>
+            <li className="nav-item mb-2">
+              <NavLink to="referenceBooks" className="nav-link text-white d-flex align-items-center">
+                <FaBookOpen className="me-2" /> Reference Books
+              </NavLink>
+            </li>
+            <li className="nav-item mb-2">
+              <NavLink to={`examLinks/${params.id}`} className="nav-link text-white d-flex align-items-center">
+                <FaLink className="me-2" /> Exam Links
+              </NavLink>
+            </li>
+            </>
+          )}
         </ul>
         <button
           className="btn btn-danger w-100 d-flex align-items-center justify-content-center"
@@ -82,8 +97,6 @@ export default function AdminSidebar() {
           <FaSignOutAlt className="me-2" /> Logout
         </button>
       </div>
-
-      
     </div>
   );
 }

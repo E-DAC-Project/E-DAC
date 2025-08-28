@@ -8,5 +8,6 @@ import lombok.Setter;
 @Setter
 public class SubtopicDto {
 	
+	private Long id;
 	private String subTopicName;
 }

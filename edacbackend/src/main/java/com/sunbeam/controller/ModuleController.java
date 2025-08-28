@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sunbeam.dto.AddModuleDto;
 import com.sunbeam.dto.ModuleDto;
-import com.sunbeam.entities.Modules;
 import com.sunbeam.service.ModuleService;
 
 import lombok.AllArgsConstructor;

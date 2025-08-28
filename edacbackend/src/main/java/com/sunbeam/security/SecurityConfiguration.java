@@ -70,9 +70,44 @@ public class SecurityConfiguration {
 		http.authorizeHttpRequests(request -> 
 		//5.permit all - swagger , view all restaurants , user signin , sign up....
 		request.requestMatchers("/swagger-ui/**","/v**/api-docs/**","/users/signin","/users/signup").permitAll()
+		.requestMatchers(HttpMethod.GET, "/quiz/**").permitAll()
 		//6. restaurants - GET - to get all restaurants  - no authentication
 		.requestMatchers(HttpMethod.GET).permitAll()
 		//update restaurant details - admin
+		.requestMatchers(HttpMethod.POST,
+		        "/topics/addTopic/**",
+		        "/subtopics/addSubtopic/**",
+		        "/mcq/addMcq/**",
+		        "/interview/addQuestion/**",
+		        "/syllabus/add/**",
+		        "/books/add/**",
+		        "/examLinks/add/**"
+		    ).hasRole("ADMIN")
+
+		    .requestMatchers(HttpMethod.PUT,
+		    	"/module/editModule/**",
+		        "/topics/editTopic/**",
+		        "/subtopics/editSubTopic/**",
+		        "/mcq/**",
+		        "/interview/**",
+		        "/syllabus/**",
+		        "/books/**",
+		        "/examLinks/**"
+		    ).hasRole("ADMIN")
+
+		    .requestMatchers(HttpMethod.DELETE,
+		    	"/module/deleteModule/**",
+		        "/topics/deleteTopic/**",
+		        "/subtopics/deleteSubTopic/**",
+		        "/mcq/**",
+		        "/interview/**",
+		        "/syllabus/**",
+		        "/books/**",
+		        "/examLinks/**"
+		    ).hasRole("ADMIN")
+
+		    // All other requests require authentication
+		    .anyRequest().authenticated());
 		.requestMatchers(HttpMethod.POST).hasRole("ADMIN")
 		.requestMatchers(HttpMethod.PUT).hasRole("ADMIN")
 		.requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
@@ -84,7 +119,7 @@ public class SecurityConfiguration {
 		session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		//5. add custom JWT filter before -UserNamePasswordAuthFilter 
 		http.addFilterBefore(customJwtFilter
-				, UsernamePasswordAuthenticationFilter.class);
+				,UsernamePasswordAuthenticationFilter.class);
 		//6. Customize error code of SC 401 , in case of authentication failure
 		http.exceptionHandling
 		(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint));

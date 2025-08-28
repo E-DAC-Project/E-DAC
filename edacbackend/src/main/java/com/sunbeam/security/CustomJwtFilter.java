@@ -62,7 +62,6 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 				SecurityContextHolder
 				.getContext() //rets current sec ctx
 				.setAuthentication(authentication);
-		
 			}
 			//allow the request to continue ....
 			filterChain.doFilter(request, response);
@@ -77,5 +76,4 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 	        response.getWriter().write("{\"error\":\"Invalid or missing JWT\"}");
 	    }
 	}
-
 }

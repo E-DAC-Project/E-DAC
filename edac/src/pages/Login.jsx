@@ -116,7 +116,7 @@ const Login = () => {
       }
     } catch (err) {
       console.log(err);
-      toast.error("Something went wrong during login.");
+      toast.error("Invalid Email or password");
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.sunbeam.Dao.TopicDao;
 import com.sunbeam.customException.InvalidInputException;
+import com.sunbeam.dto.AddTopicDto;
 import com.sunbeam.dto.TopicDto;
 import com.sunbeam.entities.Modules;
 import com.sunbeam.entities.SubTopics;
@@ -31,7 +32,7 @@ public class TopicServiceImpl implements TopicService {
 				.toList();
 	}
 	@Override
-	public String addNewTopic(TopicDto newTopic, Long id) {
+	public String addNewTopic(AddTopicDto newTopic, Long id) {
 		
 		Modules m = topicDao.findModuleById(id);
 		if(m!=null) {
@@ -45,7 +46,7 @@ public class TopicServiceImpl implements TopicService {
 			t.setModule(m);
 			m.getTopicList().add(t);
 			Topics addedTopic = topicDao.save(t);
-			return addedTopic.getTopicName() + "Added in the list";
+			return addedTopic.getTopicName() + " Added in the list";
 		} else {
 			
 			throw new InvalidInputException("Module with given id is not present");
