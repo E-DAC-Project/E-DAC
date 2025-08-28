@@ -11,9 +11,9 @@ instance.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       // JWT expired or unauthorized → redirect to login
-      toast.warning("Token expired please login again")
       sessionStorage.clear();
       window.location.href = '/login';  // adjust to your login path
+      toast.warning("Token expired please login again")
     }
     return Promise.reject(error);
   }

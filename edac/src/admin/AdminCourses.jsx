@@ -247,9 +247,9 @@ function AdminCourses() {
 
       <div className="module-list">
         {courses.map((mod) => (
-          <div key={mod.id} className="card mb-3 p-3 shadow-sm" onClick={() => navigate(`/adminDashboard/syllabus/${mod.id}`)}
-          style={{ cursor: "pointer" }}>
-            <h4>{mod.moduleName}</h4>
+          <div key={mod.id} className="card mb-3 p-3 shadow-sm" >
+            <h4 onClick={() => navigate(`/adminDashboard/syllabus/${mod.id}`)}
+          style={{ cursor: "pointer" }}>{mod.moduleName}</h4>
             <p>
               <strong>Description:</strong> {mod.description}
             </p>
@@ -269,7 +269,6 @@ function AdminCourses() {
               >
                 Delete
               </button>
-              <button className="btn btn-success">Add Topic</button>
             </div>
           </div>
         ))}

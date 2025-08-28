@@ -3,8 +3,6 @@ package com.sunbeam.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -21,7 +19,7 @@ public class SignupReqDTO{
 	@NotBlank(message = "first name must be supplied")
 	private String firstName;
 	@NotBlank(message = "last name must be supplied")
-	@Size(min = 4,max=20,message = "invalid last name length")
+	@Size(max=20,message = "invalid last name length")
 	private String lastName;
 	
 	@NotBlank(message = "Email must be supplied")

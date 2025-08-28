@@ -1,101 +1,161 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
-import { useOutletContext } from "react-router-dom";
+//import toast from "react-hot-toast";
+import { toast } from 'react-toastify';
+import { useParams } from "react-router-dom";
 
-function AdminExams() {
-  // ✅ Safe access to context
-  const outletContext = useOutletContext();
-  const courses = outletContext?.courses ?? [];
-
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [exams, setExams] = useState([]);
-  const [newExam, setNewExam] = useState("");
-
-  useEffect(() => {
-    if (!selectedCourse) return;
-
-    const fetchExams = async () => {
-      try {
-        const res = await axios.get(`/api/exams?course=${selectedCourse}`);
-        setExams(res.data);
-      } catch {
-        toast.error("Failed to load exams.");
-      }
-    };
-
-    fetchExams();
-  }, [selectedCourse]);
-
-  const addExam = async () => {
-    if (!newExam.trim()) return toast.warning("Exam link cannot be empty.");
+export default function QuizExam() {
+  const [stage, setStage] = useState("instructions"); // "instructions" | "exam" | "result"
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState({});
+  const [timeLeft, setTimeLeft] = useState(600); // 10 min in seconds
+  const [score, setScore] = useState(0);
+  const [submittedAnswers, setSubmittedAnswers] = useState([]);
+  const moduleId = useParams();
+  // Fetch quiz questions from backend
+  const fetchQuestions = async () => {
     try {
-      await axios.post("/api/exams", { link: newExam, course: selectedCourse });
-      toast.success("Exam link added.");
-      setNewExam("");
-      setExams(prev => [...prev, { link: newExam }]);
-    } catch {
-      toast.error("Failed to add exam link.");
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+        console.log(token);
+      const res = await axios.get(
+        `http://localhost:8080/quiz/getQuestions/${moduleId.id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setQuestions(res.data);
+    } catch (err) {
+      toast.error("Failed to fetch quiz questions");
+      console.error(err);
     }
   };
 
-  const deleteExam = async (id) => {
-    if (!window.confirm("Delete this exam link?")) return;
-    try {
-      await axios.delete(`/api/exams/${id}`);
-      setExams((prev) => prev.filter((e) => e._id !== id));
-      toast.success("Exam link deleted.");
-    } catch {
-      toast.error("Failed to delete exam.");
+  // Timer effect
+  useEffect(() => {
+    let timer;
+    if (stage === "exam" && timeLeft > 0) {
+      timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     }
+    if (timeLeft === 0 && stage === "exam") {
+      handleSubmit();
+    }
+    return () => clearInterval(timer);
+  }, [stage, timeLeft]);
+
+  // Start exam
+  const startExam = () => {
+    fetchQuestions();
+    setStage("exam");
+    setTimeLeft(600); // reset timer
+  };
+
+  // Handle answer select
+  const handleAnswer = (qId, option) => {
+    setAnswers((prev) => ({ ...prev, [qId]: option }));
+  };
+
+  // Submit exam
+  const handleSubmit = async () => {
+    try {
+      const token =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+      const res = await axios.post(
+        "http://localhost:8080/quiz/submit",
+        { answers, moduleId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setScore(res.data.score);
+      setSubmittedAnswers(res.data.answers); // [{questionId, selected, correct}]
+      setStage("result");
+    } catch (err) {
+      toast.error("Failed to submit quiz");
+      console.error(err);
+    }
+  };
+
+  // Format time (mm:ss)
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const s = (seconds % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
   };
 
   return (
-    <div className="admin-wrapper">
-      <h2 className="admin-header">Manage Exam Links</h2>
-
-      <div className="mb-3">
-        <label>Select Course</label>
-        <select
-          className="form-select"
-          value={selectedCourse}
-          onChange={(e) => setSelectedCourse(e.target.value)}
-        >
-          <option value="">-- Select Course --</option>
-          {courses.map((c, i) => (
-            <option key={i} value={c}>{c}</option>
-          ))}
-        </select>
-      </div>
-
-      {selectedCourse && (
-        <>
-          <div className="mb-4">
-            <input
-              className="form-control mb-2"
-              placeholder="Exam Link"
-              value={newExam}
-              onChange={(e) => setNewExam(e.target.value)}
-            />
-            <button className="btn btn-primary" onClick={addExam}>
-              Add Link
-            </button>
-          </div>
-
-          <ul className="list-group">
-            {exams.map((e) => (
-              <li key={e._id || e.link} className="list-group-item d-flex justify-content-between align-items-center">
-                <a href={e.link} target="_blank" rel="noopener noreferrer">{e.link}</a>
-                <button className="btn btn-sm btn-danger" onClick={() => deleteExam(e._id)}>
-                  Delete
-                </button>
-              </li>
-            ))}
+    <div className="quiz-container p-4">
+      {stage === "instructions" && (
+        <div className="bg-light p-4 rounded shadow">
+          <h3>Quiz Instructions</h3>
+          <ul>
+            <li>Duration: 10 minutes</li>
+            <li>Total Questions: 10</li>
+            <li>Each correct answer: +1 mark</li>
+            <li>No negative marking</li>
+            <li>Once started, the timer cannot be paused</li>
           </ul>
-        </>
+          <button className="btn btn-primary mt-3" onClick={startExam}>
+            Start Exam
+          </button>
+        </div>
+      )}
+
+      {stage === "exam" && (
+        <div>
+          <div className="d-flex justify-content-between mb-3">
+            <h4>Quiz</h4>
+            <h5>Time Left: {formatTime(timeLeft)}</h5>
+          </div>
+          {questions.map((q, idx) => (
+            <div key={q.id} className="mb-3 p-3 border rounded">
+              <strong>
+                {idx + 1}. {q.questionText}
+              </strong>
+              <div>
+                {q.options.map((opt, i) => (
+                  <div key={i}>
+                    <input
+                      type="radio"
+                      name={`q-${q.id}`}
+                      value={opt}
+                      checked={answers[q.id] === opt}
+                      onChange={() => handleAnswer(q.id, opt)}
+                    />
+                    <label className="ms-2">{opt}</label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          <button className="btn btn-success mt-3" onClick={handleSubmit}>
+            Submit
+          </button>
+        </div>
+      )}
+
+      {stage === "result" && (
+        <div className="p-4 bg-light rounded">
+          <h3>Your Score: {score} / 10</h3>
+          <h5>Answer Review:</h5>
+          {submittedAnswers.map((ans, idx) => (
+            <div
+              key={ans.questionId}
+              className={`p-2 my-2 rounded ${
+                ans.selected === ans.correct ? "bg-success text-white" : "bg-danger text-white"
+              }`}
+            >
+              <strong>Q{idx + 1}:</strong> {ans.questionText}
+              <br />
+              <span>Your Answer: {ans.selected}</span>
+              <br />
+              <span>Correct Answer: {ans.correct}</span>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
 }
-
-export default AdminExams;

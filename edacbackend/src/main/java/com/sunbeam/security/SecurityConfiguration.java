@@ -70,14 +70,44 @@ public class SecurityConfiguration {
 		http.authorizeHttpRequests(request -> 
 		//5.permit all - swagger , view all restaurants , user signin , sign up....
 		request.requestMatchers("/swagger-ui/**","/v**/api-docs/**","/users/signin","/users/signup").permitAll()
+		.requestMatchers(HttpMethod.GET, "/quiz/**").permitAll()
 		//6. restaurants - GET - to get all restaurants  - no authentication
 		.requestMatchers(HttpMethod.GET).permitAll()
-		//get restaurant by id - customer
-		.requestMatchers(HttpMethod.GET,"/restaurants/{id}")
-		.hasRole("CUSTOMER")
 		//update restaurant details - admin
-		.requestMatchers(HttpMethod.PUT,"/restaurants/{id}").hasRole("ADMIN")
-		.anyRequest().authenticated());
+		.requestMatchers(HttpMethod.POST,
+		        "/topics/addTopic/**",
+		        "/subtopics/addSubtopic/**",
+		        "/mcq/addMcq/**",
+		        "/interview/addQuestion/**",
+		        "/syllabus/add/**",
+		        "/books/add/**",
+		        "/examLinks/add/**"
+		    ).hasRole("ADMIN")
+
+		    .requestMatchers(HttpMethod.PUT,
+		    	"/module/editModule/**",
+		        "/topics/editTopic/**",
+		        "/subtopics/editSubTopic/**",
+		        "/mcq/**",
+		        "/interview/**",
+		        "/syllabus/**",
+		        "/books/**",
+		        "/examLinks/**"
+		    ).hasRole("ADMIN")
+
+		    .requestMatchers(HttpMethod.DELETE,
+		    	"/module/deleteModule/**",
+		        "/topics/deleteTopic/**",
+		        "/subtopics/deleteSubTopic/**",
+		        "/mcq/**",
+		        "/interview/**",
+		        "/syllabus/**",
+		        "/books/**",
+		        "/examLinks/**"
+		    ).hasRole("ADMIN")
+
+		    // All other requests require authentication
+		    .anyRequest().authenticated());
 		//3. enable HTTP basic auth
 	//	http.httpBasic(Customizer.withDefaults());
 		//4. set session creation policy - stateless

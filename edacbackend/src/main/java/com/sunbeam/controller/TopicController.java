@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping; // Added for PUT
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sunbeam.dto.AddTopicDto;
 import com.sunbeam.dto.TopicDto;
 import com.sunbeam.service.TopicService;
-import com.sunbeam.entities.Topics; // Import Topics entity
 
 import lombok.AllArgsConstructor;
 
@@ -39,18 +38,19 @@ public class TopicController {
 		}
 		return ResponseEntity.ok(topicList);
 	}
-	@PostMapping("addTopic")
-	public String addTopic(@RequestBody TopicDto newTopic, @RequestParam Long moduleId) {
+	@PostMapping("/addTopic/{moduleId}")
+	public String addTopic(@RequestBody AddTopicDto newTopic, @PathVariable Long moduleId) {
 		
+		System.out.println(newTopic.getTopicName());
 		return topicService.addNewTopic(newTopic, moduleId);
 	}
 
-	@PutMapping("/editTopics/{id}") 
+	@PutMapping("/editTopic/{id}") 
 	public ResponseEntity<?> updateTopic(@PathVariable Long id, @RequestBody TopicDto topicDetails) {
 		return ResponseEntity.ok(topicService.updateTopic(id, topicDetails));
 	}
 
-	@DeleteMapping("/deleteTopics/{id}") 
+	@DeleteMapping("/deleteTopic/{id}") 
 	public ResponseEntity<String> deleteTopic(@PathVariable Long id) {
 		topicService.deleteTopic(id);
 		return ResponseEntity.ok("Topic with ID " + id + " deleted successfully.");

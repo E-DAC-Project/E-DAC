@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.sunbeam.Dao.SubTopicDao;
 import com.sunbeam.customException.InvalidInputException;
 import com.sunbeam.dto.SubtopicDto;
+import com.sunbeam.dto.addSubTopicDto;
 import com.sunbeam.entities.SubTopics;
 import com.sunbeam.entities.Topics;
 import com.sunbeam.service.SubTopicService;
@@ -30,7 +31,7 @@ public class SubTopicServiceImpl implements SubTopicService {
 				.toList();
 	}
 	@Override
-	public String addNewSubTopic(SubtopicDto newSubTopic, Long id) {
+	public String addNewSubTopic(addSubTopicDto newSubTopic, Long id) {
 		
 		Topics t = subtopicDao.findTopicById(id);
 		if(t!=null) {
@@ -67,11 +68,11 @@ public class SubTopicServiceImpl implements SubTopicService {
         modelMapper.map(subTopicDto, existingSubTopic);
         
         // Update topic relationship if different
-        if (!existingSubTopic.getTopic().getId().equals(subTopicDto.getTopicId())) {
-            Topics newTopic = subtopicDao.findTopicById(subTopicDto.getTopicId());
+        // if (!existingSubTopic.getTopic().getId().equals(subTopicDto.getTopicId())) {
+        //     Topics newTopic = subtopicDao.findTopicById(subTopicDto.getTopicId());
             
-            existingSubTopic.setTopic(newTopic);
-        }
+        //     existingSubTopic.setTopic(newTopic);
+        // }
         
         SubTopics updatedSubTopic = subtopicDao.save(existingSubTopic);
         return modelMapper.map(updatedSubTopic, SubtopicDto.class);

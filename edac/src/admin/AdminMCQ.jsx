@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../pages/axios";
 import { toast } from "react-toastify";
 
 function AdminMCQ() {

@@ -45,4 +45,10 @@ public class Modules extends BaseEntity {
 	private List<Topics> topicList = new ArrayList<Topics>();
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ReferenceBooks> rbList = new ArrayList<ReferenceBooks>();
+    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Quiz> quizzes = new ArrayList<>();
+    
+    public Long getId() {
+    	return id;
+    }
 }

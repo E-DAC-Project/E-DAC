@@ -37,12 +37,12 @@ export default function AppRoutes() {
         <Route path="/modules" element={<EDACModulesSection />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/:module/:resource" element={<ResourcePage />} />
       {/* Admin Dashboard Routes */}
       <Route path="/adminDashboard/*" element={<AdminDashboardRoutes />} />
 
       {/* Student Dashboard Routes */}
       <Route path="/studentDashboard/*" element={<StudentDashboardRoutes />} />
-        <Route path="/:module/:resource" element={<ResourcePage />} />
       </Route>
     </Routes>
   );
