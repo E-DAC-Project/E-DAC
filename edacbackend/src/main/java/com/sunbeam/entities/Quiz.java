@@ -19,7 +19,7 @@ import lombok.Setter;
 public class Quiz extends BaseEntity {
 
     private String title;
-    private int durationMinutes; // 10 minutes in your case
+    private int durationMinutes;
 
     @ManyToOne
     @JoinColumn(name = "module_id")

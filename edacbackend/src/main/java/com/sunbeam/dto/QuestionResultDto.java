@@ -1,8 +1,5 @@
 package com.sunbeam.dto;
 
-import java.util.List;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionDto {
-    private Long id;
-    private String questionText;
-    private List<AnswerDto> answers;
+public class QuestionResultDto {
+
+	private Long questionId;
+    private Long selectedAnswerId;
+    private Long correctAnswerId;
+    private boolean correct;
 }

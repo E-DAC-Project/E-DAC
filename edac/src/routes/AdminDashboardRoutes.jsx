@@ -8,7 +8,10 @@ import AdminSyllabus from "../admin/AdminSyllabus";
 import AdminMCQ from "../admin/AdminMCQ";
 import AdminInterview from "../admin/AdminInterview";
 import AdminBooks from "../admin/AdminBooks";
-import AdminExams from "../admin/AdminExams";
+import ExamList from "../Exam/ExamList";
+import ExamInstruction from '../Exam/ExamInstruction';
+import ExamPage from '../Exam/ExamPage'
+import ExamResult from '../Exam/ExamResult';
 
 function AdminDashboardRoutes() {
   return (
@@ -21,7 +24,10 @@ function AdminDashboardRoutes() {
         <Route path="mcq" element={<AdminMCQ />} />
         <Route path="interview" element={<AdminInterview />} />
         <Route path="referenceBooks" element={<AdminBooks />} />
-        <Route path="examLinks/:id" element={<AdminExams />} />
+        <Route path="examLinks/:moduleId" element={<ExamList />} />
+        <Route path="exam/:quizId/instructions" element={<ExamInstruction />} />
+        <Route path="exam/:quizId/start" element={<ExamPage />} />
+        <Route path="exam/:quizId/result" element={<ExamResult />} />
       </Route>
     </Routes>
   );

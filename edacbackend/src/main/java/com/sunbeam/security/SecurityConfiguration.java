@@ -81,7 +81,7 @@ public class SecurityConfiguration {
 		        "/interview/addQuestion/**",
 		        "/syllabus/add/**",
 		        "/books/add/**",
-		        "/examLinks/add/**"
+		        "/quiz/**"
 		    ).hasRole("ADMIN")
 
 		    .requestMatchers(HttpMethod.PUT,
@@ -107,7 +107,6 @@ public class SecurityConfiguration {
 		    ).hasRole("ADMIN")
 
 		    // All other requests require authentication
-		    .anyRequest().authenticated());
 		.requestMatchers(HttpMethod.POST).hasRole("ADMIN")
 		.requestMatchers(HttpMethod.PUT).hasRole("ADMIN")
 		.requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
