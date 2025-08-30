@@ -19,6 +19,13 @@ function AdminCourses() {
 
   const formRef = useRef(null);
 
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    // Get role from localStorage (or from auth context)
+    const userRole = localStorage.getItem("role") || sessionStorage.getItem("role");
+    if (userRole) setRole(userRole);
+  }, []);
   useEffect(() => {
     let savedToken;
     if (sessionStorage.length !== 0) {
@@ -165,44 +172,48 @@ function AdminCourses() {
 
   return (
     <div>
-      <h2 className="text-primary mb-4">Manage Courses</h2>
-      <div className="input-group mb-3">
-        <input
-          value={courseName}
-          onChange={(e) => setCourseName(e.target.value)}
-          className="form-control"
-          placeholder="New course name"
-        />
-      </div>
-      <div className="input-group mb-3">
-        <input
-          value={courseDescription}
-          onChange={(e) => setCourseDescription(e.target.value)}
-          className="form-control"
-          placeholder="New course description"
-        />
-      </div>
-      <label className="block mb-2 font-medium">
-        Module Period (in months)
-      </label>
-      <select
-        className="border p-2 w-full mb-4"
-        value={module_period}
-        onChange={(e) => setModule_period(e.target.value)}
-        required
-      >
-        <option value="">Select period</option>
-        {[1, 2, 3, 4, 5, 6].map((month) => (
-          <option key={month} value={month}>
-            {month}
-          </option>
-        ))}
-      </select>
-      <div className="col-md-2">
-        <button className="btn btn-primary w-100" onClick={addCourse}>
-          <Plus size={16} /> Add
-        </button>
-      </div>
+      {role === "ROLE_ADMIN" && (
+        <>
+          <h2 className="text-primary mb-4">Manage Courses</h2>
+          <div className="input-group mb-3">
+            <input
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
+              className="form-control"
+              placeholder="New course name"
+            />
+          </div>
+          <div className="input-group mb-3">
+            <input
+              value={courseDescription}
+              onChange={(e) => setCourseDescription(e.target.value)}
+              className="form-control"
+              placeholder="New course description"
+            />
+          </div>
+          <label className="block mb-2 font-medium">
+            Module Period (in months)
+          </label>
+          <select
+            className="border p-2 w-full mb-4"
+            value={module_period}
+            onChange={(e) => setModule_period(e.target.value)}
+            required
+          >
+            <option value="">Select period</option>
+            {[1, 2, 3, 4, 5, 6].map((month) => (
+              <option key={month} value={month}>
+                {month}
+              </option>
+            ))}
+          </select>
+          <div className="col-md-2">
+            <button className="btn btn-primary w-100" onClick={addCourse}>
+              <Plus size={16} /> Add
+            </button>
+          </div>
+        </>
+      )}
 
 
       <form ref={formRef}>
@@ -255,20 +266,22 @@ function AdminCourses() {
             <p>
               <strong>Period:</strong> {mod.modulePeriod} month
             </p>
-            <div className="btn-group">
-              <button
-                className="btn btn-primary"
-                onClick={() => handleEdit(mod)}
-              >
-                Edit
-              </button>
-              <button
-                className="btn btn-danger"
-                onClick={() => deleteCourse(mod.id)}
-              >
-                Delete
-              </button>
-            </div>
+            {role === "ROLE_ADMIN" && (
+              <div className="btn-group">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleEdit(mod)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => deleteCourse(mod.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

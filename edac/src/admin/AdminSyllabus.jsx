@@ -9,12 +9,15 @@ const ModuleDetails = () => {
   const [topics, setTopics] = useState([]);
   const [expandedTopic, setExpandedTopic] = useState(null);
   const [topicName, setTopicName] = useState("");
+  const [role, setRole] = useState(null);
+
 
   useEffect(() => {
     fetchTopics();
+    const userRole = JSON.parse(localStorage.getItem("role")) || JSON.parse(sessionStorage.getItem("role"));
+    if (userRole) setRole(userRole);
   }, []);
 
-  // Fetch all topics for the module (without subtopics initially)
   const fetchTopics = async () => {
     try {
       const token =
@@ -140,18 +143,20 @@ const ModuleDetails = () => {
     <div className="container mt-4">
       <h2>Module Topics</h2>
       {/* Add Topic Form */}
-      <div className="mb-3 d-flex">
-        <input
-          type="text"
-          className="form-control me-2"
-          placeholder="New topic name"
-          value={topicName}
-          onChange={(e) => setTopicName(e.target.value)}
-        />
-        <button className="btn btn-success" onClick={handleAddTopic}>
-          <FaPlus /> Add Topic
-        </button>
-      </div>
+      {role === "ROLE_ADMIN" && (
+        <div className="mb-3 d-flex">
+          <input
+            type="text"
+            className="form-control me-2"
+            placeholder="New topic name"
+            value={topicName}
+            onChange={(e) => setTopicName(e.target.value)}
+          />
+          <button className="btn btn-success" onClick={handleAddTopic}>
+            <FaPlus /> Add Topic
+          </button>
+        </div>
+      )}
       {topics.map((topic) => (
         <div key={topic.id} className="card mb-2">
           <div
@@ -160,24 +165,26 @@ const ModuleDetails = () => {
             style={{ cursor: "pointer" }}
           >
             <span>{topic.topicName}</span>
-            <span>
-              <FaEdit
-                className="me-3 text-primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEditTopic(topic.id);
-                }}
-                style={{cursor:"pointer"}}
-              />
-              <FaTrash
-                className="text-danger"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteTopic(topic.id);
-                }}
-                style={{cursor:"pointer"}}
-              />
-            </span>
+            {role === "ROLE_ADMIN" && (
+              <span>
+                <FaEdit
+                  className="me-3 text-primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditTopic(topic.id);
+                  }}
+                  style={{cursor:"pointer"}}
+                />
+                <FaTrash
+                  className="text-danger"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteTopic(topic.id);
+                  }}
+                  style={{cursor:"pointer"}}
+                />
+              </span>
+            )}
           </div>
 
           {expandedTopic === topic.id && topic.subtopics.length > 0 && (
@@ -188,18 +195,20 @@ const ModuleDetails = () => {
                   className="list-group-item d-flex justify-content-between align-items-center"
                 >
                   {sub.subTopicName}
-                  <span>
-                    <FaEdit
-                      className="me-3 text-primary"
-                      onClick={() => handleEditSubtopic(sub.id)}
-                      style={{cursor:"pointer"}}
-                    />
-                    <FaTrash
-                      className="text-danger"
-                      onClick={() => handleDeleteSubtopic(sub.id)}
-                      style={{cursor:"pointer"}}
-                    />
-                  </span>
+                  {role === "ROLE_ADMIN" && (
+                    <span>
+                      <FaEdit
+                        className="me-3 text-primary"
+                        onClick={() => handleEditSubtopic(sub.id)}
+                        style={{cursor:"pointer"}}
+                      />
+                      <FaTrash
+                        className="text-danger"
+                        onClick={() => handleDeleteSubtopic(sub.id)}
+                        style={{cursor:"pointer"}}
+                      />
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

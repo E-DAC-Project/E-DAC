@@ -21,6 +21,7 @@ const ExamResult = () => {
   }
 
   return (
+
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
       <h1 className="text-2xl font-bold text-center mb-6">Exam Result</h1>
 
