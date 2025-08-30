@@ -37,7 +37,6 @@ function AdminCourses() {
             },
           }
         );
-        // console.log(response.data);
         setCourses(response.data);
       } catch (error) {
         console.error("Error fetching courses:", error);

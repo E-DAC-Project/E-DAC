@@ -14,7 +14,7 @@ import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 export default function AdminSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useParams();
+  const moduleId = useParams();
   // Example: check if path contains "topics"
   const isInModule = location.pathname.includes("/syllabus/");
   
@@ -83,7 +83,7 @@ export default function AdminSidebar() {
               </NavLink>
             </li>
             <li className="nav-item mb-2">
-              <NavLink to={`examLinks/${params.id}`} className="nav-link text-white d-flex align-items-center">
+              <NavLink to={`examLinks/${moduleId.id}`} className="nav-link text-white d-flex align-items-center">
                 <FaLink className="me-2" /> Exam Links
               </NavLink>
             </li>

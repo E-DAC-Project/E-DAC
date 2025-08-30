@@ -1,8 +1,7 @@
 package com.sunbeam.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,19 +12,17 @@ import lombok.Setter;
 @Setter
 public class UserResponse extends BaseEntity {
 
-    private Long userId; // or link to your User entity
+	@Column(name = "user_id")
+    private Long userId; 
 
-    @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    private Quiz quiz;
+    @Column(name = "quiz_id")
+    private Long quizId;
 
-    @ManyToOne
-    @JoinColumn(name = "question_id")
-    private Question question;
+    @Column(name = "question_id")
+    private Long questionId;
 
-    @ManyToOne
-    @JoinColumn(name = "selected_answer_id")
-    private Answer selectedAnswer;
+    @Column(name = "selected_answer_id")
+    private Long selectedAnswerId;
 
     private boolean isCorrect;
 }
