@@ -1,0 +1,65 @@
+version: "3.9"
+
+
+name: edac-stack
+
+
+services:
+db:
+image: mysql:8.4
+container_name: edac-mysql
+environment:
+MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+MYSQL_DATABASE: ${MYSQL_DATABASE}
+MYSQL_USER: ${MYSQL_USER}
+MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+ports:
+- "3306:3306" # optional: expose for local DB tools
+volumes:
+- mysql_data:/var/lib/mysql
+healthcheck:
+test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+interval: 10s
+timeout: 5s
+retries: 10
+
+
+backend:
+build:
+context: ./backend
+dockerfile: Dockerfile
+container_name: edac-backend
+depends_on:
+db:
+condition: service_healthy
+environment:
+# Spring Boot will map these ENV keys automatically
+SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+SPRING_JPA_OPEN_IN_VIEW: "false"
+SPRING_JPA_SHOW_SQL: "true"
+SPRING_JPA_HIBERNATE_DDL_AUTO: update
+# JWT env (matches your local config)
+JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME}
+ports:
+- "8080:8080" # optional: hit backend directly for testing
+# networks: default network is fine; service name becomes DNS host
+
+
+frontend:
+build:
+context: ./frontend
+dockerfile: Dockerfile
+args:
+REACT_APP_API_BASE_URL: /api
+container_name: edac-frontend
+depends_on:
+- backend
+ports:
+- "3000:80" # open the web app at http://localhost:3000
+
+
+volumes:
+mysql_data:

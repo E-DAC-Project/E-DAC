@@ -48,34 +48,10 @@ export default function StudentSidebar() {
           </li>
           <li className="nav-item mb-2">
             <NavLink
-              to="course"
+              to="courses"
               className="nav-link text-white d-flex align-items-center"
             >
-              <FaBook className="me-2" /> My Course
-            </NavLink>
-          </li>
-          <li className="nav-item mb-2">
-            <NavLink
-              to="certificate"
-              className="nav-link text-white d-flex align-items-center"
-            >
-              <FaCertificate className="me-2" /> Certificate
-            </NavLink>
-          </li>
-          <li className="nav-item mb-2">
-            <NavLink
-              to="projects"
-              className="nav-link text-white d-flex align-items-center"
-            >
-              <FaProjectDiagram className="me-2" /> Open Projects
-            </NavLink>
-          </li>
-          <li className="nav-item mb-2">
-            <NavLink
-              to="settings"
-              className="nav-link text-white d-flex align-items-center"
-            >
-              <FaCog className="me-2" /> Settings
+              <FaBook className="me-2" /> Courses
             </NavLink>
           </li>
         </ul>
